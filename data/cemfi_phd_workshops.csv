@@ -1,0 +1,92 @@
+term,date,time,presenter,paper,abstract,links
+Fall 2025,13 Oct 2025,13:30–14:45,Valentina Rutigliano,TBD,,
+Fall 2025,24 Nov 2025,13:30–14:30,Andrea Sy,TBD,,
+Fall 2025,01 Dec 2025,13:30–14:45,Dominic Cucic,TBD,,
+Fall 2025,01 Dec 2025,15:15–16:00,Jesús Villota,TBD,,
+Spring 2025,12 May 2025,13:30–14:15,Jan Schäfer,TBD,,
+Spring 2025,19 May 2025,13:30–14:15,Jesús Villota & Paolo de Rosa,TBD,,
+Spring 2025,18 Jun 2025,13:30–14:15,Enrico Stivella,TBD,,
+Winter 2025,17 Feb 2025,11:15–12:00,Jan Schaefer,TBD,,
+Winter 2025,03 Mar 2025,16:00–16:45,Jesús Villota,TBD,,
+Winter 2025,10 Mar 2025,11:15–12:00,Paolo de Rosa,TBD,,
+Fall 2024,14 Oct 2024,11:30–12:15,Paolo de Rosa,TBD,,
+Fall 2024,23 Oct 2024,11:30–12:15,Jan Schaefer,TBD,,
+Fall 2024,28 Oct 2024,11:30–12:15,Jesús Villota,TBD,,
+Fall 2024,27 Oct 2024,11:30–12:15,Nicolas Serrano,TBD,,
+Spring 2024,29 Apr 2024,13:30–14:15,Jan Schaefer,The Competition & Stability Trade-Off: A Quantitative Assessment,,
+Spring 2024,13 May 2024,13:30–15:00,Vedant Agarwal,TBD,,
+Spring 2024,13 May 2024,13:30–15:00,Siema Hashemi,TBD,,
+Spring 2024,03 Jun 2024,13:30–14:15,Paolo de Rosa,TBD,,
+Winter 2024,12 Feb 2024,13:30–14:15,Jan Schaefer,TBD,,
+Winter 2024,19 Feb 2024,13:30–14:15,Paolo de Rosa,TBD,,
+Winter 2024,26 Feb 2024,13:30–14:15,Martín Farias,TBD,,
+Fall 2023,15 Nov 2023,13:30–15:00,Paolo de Rosa,"""Liquidity Regulation and Banks: Theory and Evidence"" by Suresh Sundaresan and Kairong Xiao",,
+Fall 2023,15 Nov 2023,13:30–15:00,Jan Schaefer,"""Bank Capital Requirements: Does Interest Rate Risk Matter?"" (joint with Vedant Agarwal)",,
+Fall 2023,27 Nov 2023,15:00–15:45,Vedant Agarwal,TBD,,
+Summer 2023,22 May 2023,13:30–14:15,Utso Pal Mustafi,Shocks to public debt maturity and effect on the macroeconomy,"Over the last few decades, there has been substantial variation in the average maturity at which US government debt is issued. More recently, in the face of rising debt-to-GDP, it is important to analyse whether the maturity at which a government funds its debt has implications on the macroeconomy. In this project, I use a novel design combining high-frequency data and institutional features of Treasury announcements in the primary market, to identify shocks to the maturity structure of US public debt. An exogenous increase in the maturity of new public debt issuance increases the term spread significantly, increases output, reduces unemployment steadily until a 1 year period, and leads to a persistent increase in inflation. I propose to calibrate a model embedding the preferred habitat framework in a New Keynesian model to analyse the transmission from bond supply to asset prices and to the macroeconomy.",
+Summer 2023,29 May 2023,13:30–15:00,Martín Farias,The impact of financial frictions on the allocation of cash flow,,
+Summer 2023,29 May 2023,13:30–15:00,Jan Schaefer,Negative Interest Rates & Bank Fragility,,
+Summer 2023,05 Jun 2023,13:30–15:00,Siema Hashemi,Bail-ins and Bailouts under System Risk,,
+Summer 2023,05 Jun 2023,13:30–15:00,Vedant Agarwal,Deposit Insurance in an Infinite Horizon Model featuring Bank Runs,,
+Winter 2023,13 Feb 2023,13:15–15:00,Martín Farias,Cash flow shocks and their transmission to cash savings,,
+Winter 2023,13 Feb 2023,13:15–15:00,Jan Schaefer,Negative Interest Rates & Bank Fragility,,
+Winter 2023,13 Mar 2023,13:15–15:00,Siema Hashemi,TBD,,
+Winter 2023,13 Mar 2023,13:15–15:00,Vedant Agarwal,TBD,,
+Fall 2022,24 Oct 2022,13:30–14:15,Julio Gálvez (BdE),"Richer earnings dynamics, consumption and portfolio choice over the life cycle","Households face earnings risk which is non-normal and varies by age and over the income distribution. We show that allowing for these rich features of earnings dynamics, in the context of a structurally estimated life-cycle portfolio choice model, helps to better understand the limited participation of households in the stock market and their low holdings of risky assets. Because households are subject to more background risk than previously considered, the estimated model implies a substantially lower coefficient of risk aversion and a lower optimal risky share for older workers with low wealth and high earnings.",
+Fall 2022,31 Oct 2022,13:30–14:15,Utso Pal Mustafi,TBD,,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/30min_NonbankLending.pdf"", ""label"": ""TBD""}]"
+Fall 2022,14 Nov 2022,13:30–15:00,Martín Farias,TBD,,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/30min_NonbankLending.pdf"", ""label"": ""TBD""}]"
+Fall 2022,14 Nov 2022,13:30–15:00,Vedant Agarwal,TBD,,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/30min_NonbankLending.pdf"", ""label"": ""TBD""}]"
+Fall 2022,28 Nov 2022,13:30–15:00,Siema Hashemi,TBD,,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/30min_NonbankLending.pdf"", ""label"": ""TBD""}]"
+Fall 2022,28 Nov 2022,13:30–15:00,Jan Schaefer,TBD,,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/30min_NonbankLending.pdf"", ""label"": ""TBD""}]"
+Spring 2022,09 May 2022,13:30–15:00,TBD,TBD,,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/20220214Martin.pdf"", ""label"": ""TBD""}]"
+Spring 2022,09 May 2022,13:30–15:00,TBD,TBD,,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/20220214Martin.pdf"", ""label"": ""TBD""}]"
+Spring 2022,23 May 2022,13:30–15:00,TBD,TBD,,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/20220214Martin.pdf"", ""label"": ""TBD""}]"
+Spring 2022,23 May 2022,13:30–15:00,TBD,TBD,,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/20220214Martin.pdf"", ""label"": ""TBD""}]"
+Spring 2022,06 Jun 2022,13:30–15:00,TBD,TBD,,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/20220214Martin.pdf"", ""label"": ""TBD""}]"
+Spring 2022,06 Jun 2022,13:30–15:00,TBD,TBD,,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/20220214Martin.pdf"", ""label"": ""TBD""}]"
+Winter 2022,21 Feb 2022,12:00–12:45,Antonio Stefanizzi,Financial Literacy: A Shield against Financial Frauds?,,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/Stefanizzi_BF_RG_21Feb%20%282%29.pdf"", ""label"": ""Slides""}]"
+Winter 2022,07 Mar 2022,13:30–15:00,Maximiliano San Millán,"Nonbank Sectoral reallocation of bank credit, securitization and technological change",,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/Maximiliano%20San%20Mill%C3%A1n.pdf"", ""label"": ""Slides""}]"
+Winter 2022,07 Mar 2022,13:30–15:00,Vedant Agarwal,Financial Constraints and Environmental Regulation,,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/BF_RG_070322%20%284%29.pdf"", ""label"": ""Slides""}]"
+Winter 2022,14 Mar 2022,13:30–15:00,Joël Marbet,Distributional Consequences of a CBDC Introduction,,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/RG_Marbet%20%281%29.pdf"", ""label"": ""Slides""}]"
+Winter 2022,14 Mar 2022,13:30–15:00,Martin Farias,Recent trends on bond financing in Europe,,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/20220214Martin.pdf"", ""label"": ""Slides""}]"
+Fall 2021,11 Oct 2021,13:30–14:15,Vedant Agarwal,"""Tracking Retail Investor Activity"" [Link]",,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/Agarwal_BF_RG_T1.pdf"", ""label"": ""Slides""}]"
+Fall 2021,11 Oct 2021,14:15–15:00,Antonio Stefanizzi,"""Cutting Through the Fog: Financial Literacy and Financial Investment Choices"" [Link]",,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/Stefanizzi_Banking_and_Finance_RG.pdf"", ""label"": ""Slides""}]"
+Fall 2021,25 Oct 2021,13:30–14:15,Martin Farias,The Anatomy of the Transmission of Macroprudential Policies,,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/20211025_Farias.pdf"", ""label"": ""Slides""}]"
+Fall 2021,25 Oct 2021,14:15–15:00,Utso Pal Mustafi,Heterogeneity in Risk aversion and the Term Structure of Interest Rates,,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/BFRG_Utso.pdf"", ""label"": ""Slides""}]"
+Fall 2021,15 Nov 2021,15:00–15:45,Siema Hashemi,Regulating a model,,
+Fall 2021,29 Nov 2021,15:30–16:15,Joël Marbet,Distributional Consequences of a CBDC Introduction,,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/RG_Marbet.pdf"", ""label"": ""Slides""}]"
+Fall 2021,29 Nov 2021,16:15–17:00,Dominic Cucic,Nonbank Lending and the Transmission of Monetary Policy,,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/30min_NonbankLending.pdf"", ""label"": ""Slides""}]"
+Winter 2021,15 Feb 2021,13:30–14:15,Siema Hashemi,"""Modeling Bank Mergers""",,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/Hashemi_BFRG.pdf"", ""label"": ""Slides""}]"
+Winter 2021,22 Feb 2021,13:30–14:15,José Gutiérrez,"""Informational-based credit line runs: Evidence from stress test results during the European Debt Crisis""",,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/JGA.pdf"", ""label"": ""Slides""}]"
+Winter 2021,22 Feb 2021,14:15–15:00,Maximiliano San Millán,"""Bank Capital Requirements and Financial Integration""",,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/Capital_reqs_financial_integration.pdf"", ""label"": ""Slides""}]"
+Winter 2021,15 Mar 2021,13:30–14:15,Juan Martín Farías,"""Banking with Heterogeneous Beliefs""",,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/210315FARIAS.pdf"", ""label"": ""Slides""}]"
+Winter 2021,15 Mar 2021,14:15–15:00,Joël Marbet,"Bianchi, J. and Bigio, S. (2021): ""Banks, Liquidity Management, and Monetary Policy""",,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/BanksLiquidityManagementAndMonetaryPolicy.pdf"", ""label"": ""Slides""}]"
+Fall 2020,19 Oct 2020,13:30–14:15,Siema Hashemi,"Calzolari, G., Colliard, J.E. and Lóránth, G. (2019): ""Multinational Banks and Supranational Supervision""",,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/Slides%20Calzolari%20et%20al%20%282019%29.pdf?time=1603098696417"", ""label"": ""Slides""}]"
+Fall 2020,19 Oct 2020,14:15–15:00,Juan Martín Farías,"Ferrante, F. (2018): ""A Model of Endogenous Loan Quality and the Collapse of the Shadow Banking System""",,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/Slides%20Ferrante%20%282018%29.pdf"", ""label"": ""Slides""}]"
+Fall 2020,23 Oct 2020,13:30–14:15,Maximiliano San Millán,"""Capital Requirements and International Bank Lending""",,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/Presentation_Nov2020%20-%20San_Millan.pdf?time=1606130725006"", ""label"": ""Slides""}]"
+Fall 2020,30 Oct 2020,13:30–14:15,Joël Marbet,"""Booms, Banking Crises, and Monetary Policy""",,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/BoomsBankingCrisisMonetaryPolicy.pdf"", ""label"": ""Slides""}]"
+Spring 2020,30 Mar 2020,13:30–14:15,Dominik Thaler (BdE),"""The Bright Side of the Doom Loop: Banks Exposure and Default Incentives"" (joint work with Luis Rojas, UAB)",,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/SlidesDoomloopCemfi.pdf"", ""label"": ""Slides""}]"
+Spring 2020,21 Apr 2020,13:15–14:00,Maximiliano San Millán,"Devereux, M. and C. Yu (2019): ""International Financial Integration and Crisis Contagion""",,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/Devereux-Yu.pdf"", ""label"": ""Slides""}]"
+Spring 2020,21 Apr 2020,14:00–14:45,Joël Marbet,"""HANK at the ZLB: The Inflation Target and the Level of Interest Rates"" (joint work with Jesús Fernández-Villaverde, Galo Nuño, and Omar Rachedi)",,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/HANKatZLB.pdf"", ""label"": ""Slides""}]"
+Spring 2020,27 Apr 2020,13:30–14:30,José Gutiérrez,"""Optimal Capital Requirements for Credit Lines"" (own work)",,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/JGA_RG_27.04.pdf"", ""label"": ""Slides""}]"
+Spring 2020,01 Jun 2020,13:30–14:15,Jorge Abad,"""The impact of provisioning and capital requirements on bank behavior"" (joint work with Daisuke Ikeda)",,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/2020_06_01_abad_ikeda_RG.pdf"", ""label"": ""Slides""}]"
+Winter 2020,24 Feb 2020,13:15–14:00,Joël Marbet,"Brunnermeier and Koby (2019): ""The Reversal Interest Rate""",,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/ReversalRate.pdf"", ""label"": ""Slides""}]"
+Winter 2020,09 Mar 2020,16:30–17:15,José Gutiérrez,"""A Model of Credit-Line Runs"" (own work)",,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/JGA_09-03-20.pdf"", ""label"": ""Slides""}]"
+Winter 2020,09 Mar 2020,17:15–18:00,Maximiliano San Millán,"""A two Country Model of Banking Flows"" (own work)",,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/Presentation_Maxi_0903.pdf"", ""label"": ""Slides""}]"
+Winter 2020,16 Mar 2020,13:15–14:00,Dominic Cucic,"""Asset Trading and Fire Sales with Endogenous Liquidity Provision"" (own work)",,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/Cucic_trading_endog_liquidity.pdf"", ""label"": ""Slides""}]"
+Fall 2019,28 Oct 2019,15:00–15:45,Maximiliano San Millán,"Morelli, J. M., P. Ottonello, and D. J. Perez (2019): ""Global Banks and Systemic Debt Crisis""",,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/MorelliOttonelloPerezSlides.pdf"", ""label"": ""Slides""}]"
+Fall 2019,18 Nov 2019,13:15–14:00,José Gutiérrez,"""A Model of Credit-Line Runs"" (own work)",,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/JGA-5.pdf"", ""label"": ""Slides""}]"
+Fall 2019,18 Nov 2019,14:00–14:45,Joël Marbet,"He, Z. and A. Krishnamurthy (2019): ""A Macroeconomic Framework for Quantifying Systemic Risk""",,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/MacroSystemicRisk.pdf"", ""label"": ""Slides""}]"
+Winter 2019,04 Feb 2019,13:30–14:15,José Gutiérrez,Credit Lines and Incentive-Based Capital Requirements,,
+Fall 2018,15 Oct 2018,13:30–14:15,Dominic Cucic,"Xiao, J. (2018): ""Capital Allocation and Investment Dynamics in Credit Crises""",,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/Cucic-RG-Xiao.pdf"", ""label"": ""Slides""}]"
+Fall 2018,29 Oct 2018,13:30–14:15,Jorge Abad,"Gilchrist, S., and E. Zakrajšek (2012): ""Credit Spreads and Business Cycle Fluctuations""",,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/reading_group_gilchrist_zakrajsek.pdf"", ""label"": ""Slides""}]"
+Fall 2018,19 Nov 2018,13:30–14:15,José Gutiérrez,"Acharya, V., Almeida, H., Ippolito, F. and Perez, A. (2014): ""Credit lines as monitored liquidity insurance: Theory and evidence""",,
+Spring 2018,28 May 2018,15:00–16:00,Julio Galvez,"Galvez, J. and J. Mencía (2018): ""Distributional linkages between European sovereign bond and bank asset returns""",,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/Distributional_BankingandFinance.pdf"", ""label"": ""Slides""}]"
+Winter 2018,19 Feb 2018,15:30–16:30,José Gutierrez,"Acharya, V., Almeida, H., Ippolito, F., and Perez-Orive, A (2017): ""Credit lines and the liquidity insurance channel""",,
+Winter 2018,19 Mar 2018,15:00–16:00,Julio Galvez,"Crego, J. and J. Galvez (2018): ""Cyclical dependence and timing""",,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/Cyclical_long.pdf"", ""label"": ""Slides""}]"
+Fall 2017,09 Oct 2017,15:30–16:30,Magdalena Rola-Janicka,"Perotti, E. and M. Rola-Janicka (2017): ""Funding Supply and Credit Quality""",,
+Fall 2017,16 Oct 2017,15:30–16:30,Dominic Cucic,"Coimbra, N. and H. Rey (2017): ""Financial Cycles with Heterogeneous Intermediaries""",,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/Cucic%20-%20Discussion%20of%20Coimbra%2C%20Rey%20%282017%29.pdf"", ""label"": ""Slides""}]"
+Fall 2017,06 Nov 2017,15:30–16:30,Jorge Abad,"Abad, J. and J. Suarez (2017): ""Assessing the Procyclicality of Expected Credit Loss Provisions""",,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/slides-ECL_Nov_2017_reading_group_abad.pdf"", ""label"": ""Slides""}]"
+Fall 2017,13 Nov 2017,15:30–16:30,José Gutierrez,"Gersbach, H. and J. Rochet (2017): ""Capital regulation and credit fluctuations""",,
+Fall 2017,20 Nov 2017,15:30–16:30,Julio Gálvez,"Gálvez, J. and J. Mencía (2015): ""Distributional linkages between European sovereign bond and bank asset returns""",,
+Fall 2017,27 Nov 2017,15:30–16:30,Álvaro Remesal,"Remesal, A. (2017): ""Manipulation cycles""",,"[{""url"": ""https://intranet.cemfi.es/draftfile.php/6534/user/draft/555834092/Manipulation_Cycles_Slides_Remesal_27Nov2017.pdf"", ""label"": ""Slides""}]"

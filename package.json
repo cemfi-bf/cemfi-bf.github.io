@@ -1,0 +1,10 @@
+{
+  "name": "cemfi-bf-seminars",
+  "private": true,
+  "scripts": {
+    "test": "node tests/bf-calendar.test.mjs && node tests/bf-nav.test.mjs"
+  },
+  "devDependencies": {
+    "jsdom": "^26.1.0"
+  }
+}

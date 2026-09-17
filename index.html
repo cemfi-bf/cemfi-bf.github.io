@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>B&amp;F Seminars — CEMFI</title>
+    <script>
+      (function () {
+        const t = localStorage.getItem("bfs-theme");
+        const v =
+          t === "dark" || t === "red"
+            ? t
+            : !t && matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : "light";
+        document.documentElement.dataset.theme = v;
+        document.documentElement.dataset.themeResolved = "1";
+      })();
+    </script>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="#calendar" aria-label="CEMFI Banking and Finance — go to calendar">
+        <img src="logo/logo-blue.png" alt="" width="294" height="117" />
+        <img src="logo/logo-white.png" alt="" width="294" height="117" />
+        <span class="brand-text">
+          <span class="brand-eyebrow">CEMFI</span>
+          <span class="brand-title">Banking &amp; Finance</span>
+        </span>
+      </a>
+      <nav id="main-nav" aria-label="Main">
+        <button type="button" class="header-btn" data-view="calendar">Calendar</button>
+        <button type="button" class="header-btn" data-view="history">History</button>
+        <button type="button" class="header-btn" data-nav="presenter" data-view="presenter">
+          Book seminar
+        </button>
+        <button type="button" class="header-btn" data-nav="phd" data-view="phd">Book workshop</button>
+        <button type="button" class="header-btn" data-nav="faculty" data-view="faculty">Faculty</button>
+        <button type="button" class="header-btn" data-nav="organizer" data-view="organizer">Organizer</button>
+      </nav>
+      <div class="header-actions">
+        <span id="header-user" class="hidden"></span>
+        <button type="button" class="header-btn icon-btn" id="theme-cycle" aria-label="Change theme"></button>
+      </div>
+    </header>
+    <div id="error-banner" class="notice error hidden" role="alert"></div>
+    <main>
+      <section id="calendar-view">
+        <div class="page-head">
+          <h1>Seminar &amp; Workshop calendar</h1>
+          <p class="muted">Confirmed presentations and seminar requests pending confirmation.</p>
+        </div>
+        <div class="calendar-legend" aria-label="Calendar legend">
+          <span><span class="cal-swatch seminar"></span>Seminar</span
+          ><span><span class="cal-swatch workshop"></span>PhD workshop</span
+          ><span><span class="cal-swatch blocked"></span>Blocked</span
+          ><span><span class="cal-swatch pending"></span>Pending</span
+          ><span><span class="cal-swatch today"></span>Today</span>
+        </div>
+        <div id="public-calendar" class="card top-gap"></div>
+        <div id="public-calendar-detail" class="card top-gap hidden"></div>
+      </section>
+
+      <section id="history-view" class="hidden">
+        <div class="page-head">
+          <h1>Seminar &amp; Workshop history</h1>
+          <p class="muted">Every confirmed B&amp;F Seminar and PhD Workshop on record, back to 2015.</p>
+        </div>
+        <div class="card">
+          <div class="form-grid history-filters">
+            <label class="field">Year<select id="history-year"><option value="">All years</option></select></label>
+            <label class="field"
+              >Type<select id="history-type">
+                <option value="">All types</option>
+                <option value="seminar">Seminars</option>
+                <option value="workshop">PhD workshops</option>
+              </select></label
+            >
+            <label class="field wide"
+              >Search<input
+                id="history-search"
+                type="search"
+                placeholder="Presenter, affiliation, or title…"
+            /></label>
+            <div class="wide history-export">
+              <button type="button" class="btn" id="history-export-csv">Export CSV</button>
+              <button type="button" class="btn" id="history-export-json">Export JSON</button>
+              <button type="button" class="btn" id="history-export-ics">Export ICS</button>
+              <span id="history-count" class="muted"></span>
+            </div>
+          </div>
+        </div>
+        <div id="history-list" class="top-gap"></div>
+      </section>
+
+      <section id="presenter-view" class="hidden">
+        <div class="page-head">
+          <h1>Book a Seminar slot</h1>
+          <p class="muted">
+            Standard seminars run 13:30–15:00. Bookings need approval from Dante Amengual or Anatoli Segura.
+          </p>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <form id="presenter-form" class="form-grid">
+              <fieldset class="date-options wide">
+                <label class="date-option"
+                  ><input
+                    id="presenter-date-mode-monday"
+                    name="presenterDateMode"
+                    type="radio"
+                    value="monday"
+                    checked
+                  />
+                  Monday (standard)</label
+                ><label class="date-option"
+                  ><input
+                    id="presenter-date-mode-other"
+                    name="presenterDateMode"
+                    type="radio"
+                    value="other"
+                  />
+                  Other weekday (approval required)</label
+                >
+              </fieldset>
+              <div id="presenter-date-calendar" class="date-calendar wide"></div>
+              <input id="presenter-date" name="date" type="hidden" /><input
+                id="presenter-is-exception"
+                name="isException"
+                type="hidden"
+              />
+              <label class="field"
+                >Start time<input name="startTime" type="time" value="13:30" required /></label
+              ><label class="field"
+                >End time<input name="endTime" type="time" value="15:00" required
+              /></label>
+              <label class="field">Name<input name="name" required maxlength="120" /></label>
+              <label class="field">Affiliation<input name="affiliation" required maxlength="200" /></label>
+              <label class="field"
+                >Email <span class="muted">(optional)</span><input name="email" type="email" maxlength="200"
+              /></label>
+              <label class="field"
+                >Short bio <span class="muted">(optional)</span
+                ><textarea name="bio" rows="3" maxlength="1500"></textarea>
+              </label>
+              <label class="field"
+                >Personal website <span class="muted">(optional)</span
+                ><input name="website" type="text" maxlength="500" placeholder="https://…"
+              /></label>
+              <fieldset class="date-options wide">
+                <legend>Do you know what paper you will present?</legend>
+                <label class="date-option"
+                  ><input name="paperKnown" type="radio" value="no" checked /> No</label
+                ><label class="date-option"><input name="paperKnown" type="radio" value="yes" /> Yes</label>
+              </fieldset>
+              <div id="presenter-paper-fields" class="wide hidden">
+                <label class="field">Title<input name="title" maxlength="250" /></label
+                ><label class="field"
+                  >Coauthors <span class="muted">(optional)</span
+                  ><input name="coauthors" maxlength="400" /></label
+                ><label class="field"
+                  >Abstract <span class="muted">(optional)</span
+                  ><textarea name="abstract" rows="6" maxlength="6000"></textarea>
+                </label>
+              </div>
+              <div class="wide">
+                <button class="btn primary" type="submit">Book seminar slot</button>
+                <p id="presenter-status" class="muted" role="status"></p>
+              </div>
+            </form>
+          </div>
+          <aside class="card col-aside" id="presenter-available">
+            <h3>Available Faculty</h3>
+            <p id="presenter-available-note" class="muted">Choose a date to see faculty attendance.</p>
+            <div id="presenter-faculty" class="grid person-grid"></div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="faculty-view" class="hidden">
+        <div class="page-head">
+          <h1>Faculty attendance</h1>
+          <p class="muted">
+            Mondays are green when you are available. Select a Monday to mark it red when you will not be at
+            CEMFI; select it again to restore availability.
+          </p>
+        </div>
+        <div id="faculty-cards" class="grid person-grid"></div>
+        <div id="faculty-calendar" class="card top-gap hidden"></div>
+      </section>
+
+      <section id="phd-view" class="hidden">
+        <div class="page-head">
+          <h1>Book a Workshop slot</h1>
+          <p class="muted">
+            Select your card. Mondays are standard; another day is a proposal. Default time: 13:30–14:30.
+            Bookings require organizer approval.
+          </p>
+        </div>
+        <div class="two-col">
+          <div>
+            <div id="phd-cards" class="grid person-grid"></div>
+            <div id="other-phd-picker" class="card top-gap hidden"></div>
+            <div id="phd-form-wrap" class="card top-gap hidden"></div>
+          </div>
+          <aside class="card col-aside" id="phd-available">
+            <h3>Available Faculty</h3>
+            <p id="phd-available-note" class="muted">
+              Select your card and a date to see faculty attendance.
+            </p>
+            <div id="phd-faculty" class="grid person-grid"></div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="organizer-view" class="hidden">
+        <div class="page-head">
+          <h1>Organizer portal</h1>
+          <p class="muted">Manage B&amp;F seminars, PhD Workshops, and exogenous events.</p>
+        </div>
+        <div id="organizer-login" class="card narrow">
+          <h3>Sign in</h3>
+          <p class="muted">Choose your name, then enter your organizer password.</p>
+          <div class="grid person-grid" id="organizer-names">
+            <button type="button" class="person-card" data-login-name="dante">
+              <img class="avatar" src="photos/amengual.png" alt="" /><span>Dante</span></button
+            ><button type="button" class="person-card" data-login-name="anatoli">
+              <img class="avatar" src="photos/segura.png" alt="" /><span>Anatoli</span></button
+            ><button type="button" class="person-card" data-login-name="jesus">
+              <img class="avatar" src="photos/villota.png" alt="" /><span>Jesus</span>
+            </button>
+          </div>
+          <form id="organizer-login-form" class="top-gap">
+            <label class="field"
+              >Password<input
+                id="organizer-password"
+                type="password"
+                required
+                autocomplete="current-password" /></label
+            ><button class="btn primary top-gap">Sign in</button>
+            <p id="organizer-login-status" class="muted" role="status"></p>
+          </form>
+        </div>
+        <div id="organizer-dashboard" class="hidden">
+          <div id="organizer-welcome" class="welcome"></div>
+          <nav class="seg tabs" id="org-tabs" aria-label="Organizer sections">
+            <button type="button" data-org-page="organizer-seminars">Seminars</button
+            ><button type="button" data-org-page="organizer-workshops">PhD Workshops</button
+            ><button type="button" data-org-page="organizer-events">Exogenous Events</button>
+          </nav>
+          <section id="org-seminars" class="hidden top-gap">
+            <div class="seg" role="group" aria-label="Seminar actions">
+              <button type="button" data-org-action="organizer-seminars-approvals">Approve</button
+              ><button type="button" data-org-action="organizer-seminars-create">Create</button
+              ><button type="button" data-org-action="organizer-seminars-edit">Edit</button>
+            </div>
+            <div id="org-seminars-create" class="hidden top-gap">
+              <div class="card">
+                <form id="seminar-form" class="form-grid">
+                  <label class="field">Date<input name="date" type="date" required /></label
+                  ><label class="field"
+                    >Start time<input name="startTime" type="time" value="13:30" required /></label
+                  ><label class="field"
+                    >End time<input name="endTime" type="time" value="15:00" required /></label
+                  ><label class="field wide"
+                    >Presenter name<input name="presenterName" required maxlength="120" /></label
+                  ><label class="field wide"
+                    >Affiliation <span class="muted">(optional)</span
+                    ><input name="presenterAffiliation" maxlength="200" /></label
+                  ><label class="field wide">Title<input name="title" required maxlength="250" /></label
+                  ><label class="field wide"
+                    >Coauthors <span class="muted">(optional)</span
+                    ><input name="coauthors" maxlength="400" /></label
+                  ><label class="field wide"
+                    >Abstract <span class="muted">(optional)</span
+                    ><textarea name="abstract" rows="5" maxlength="6000"></textarea>
+                  </label>
+                  <div class="wide">
+                    <button class="btn primary" type="submit" id="seminar-submit">Add seminar</button>
+                    <button class="btn hidden" type="button" id="seminar-reset">Cancel edit</button>
+                    <p id="seminar-status" class="muted" role="status"></p>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <div id="org-seminars-edit" class="hidden top-gap">
+              <div class="card"><div id="seminar-edit-list" class="grid"></div></div>
+            </div>
+            <div id="org-seminars-approvals" class="hidden top-gap">
+              <h3>Pending seminar requests</h3>
+              <div id="seminar-approval-list" class="grid"></div>
+            </div>
+          </section>
+          <section id="org-workshops" class="hidden top-gap">
+            <div class="seg" role="group" aria-label="PhD Workshop actions">
+              <button type="button" data-org-action="organizer-workshops-approvals">Approve</button
+              ><button type="button" data-org-action="organizer-workshops-create">Create</button
+              ><button type="button" data-org-action="organizer-workshops-edit">Edit</button>
+            </div>
+            <div id="org-workshops-create" class="hidden top-gap">
+              <div class="card">
+                <form id="workshop-form" class="form-grid">
+                  <label class="field">Date<input name="date" type="date" required /></label
+                  ><label class="field"
+                    >Start time<input name="startTime" type="time" value="13:30" required /></label
+                  ><label class="field"
+                    >End time<input name="endTime" type="time" value="14:30" required /></label
+                  ><label class="field wide"
+                    >Presenter name<input name="presenterName" required maxlength="120" /></label
+                  ><label class="field wide"
+                    >Affiliation <span class="muted">(optional)</span
+                    ><input name="presenterAffiliation" maxlength="200" /></label
+                  ><label class="field wide">Title<input name="title" required maxlength="250" /></label
+                  ><label class="field wide"
+                    >Coauthors <span class="muted">(optional)</span
+                    ><input name="coauthors" maxlength="400" /></label
+                  ><label class="field wide"
+                    >Abstract <span class="muted">(optional)</span
+                    ><textarea name="abstract" rows="5" maxlength="6000"></textarea>
+                  </label>
+                  <div class="wide">
+                    <button class="btn primary" type="submit" id="workshop-submit">Add PhD Workshop</button>
+                    <button class="btn hidden" type="button" id="workshop-reset">Cancel edit</button>
+                    <p id="workshop-status" class="muted" role="status"></p>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <div id="org-workshops-edit" class="hidden top-gap">
+              <div class="card"><div id="workshop-edit-list" class="grid"></div></div>
+            </div>
+            <div id="org-workshops-approvals" class="hidden top-gap">
+              <h3>Pending PhD Workshop bookings</h3>
+              <p id="workshop-approval-status" class="muted" role="status"></p>
+              <div id="workshop-approval-list" class="grid"></div>
+            </div>
+          </section>
+          <section id="org-events" class="hidden top-gap">
+            <div class="seg" role="group" aria-label="Exogenous Event actions">
+              <button type="button" data-org-action="organizer-events-create">Create</button
+              ><button type="button" data-org-action="organizer-events-edit">Edit</button>
+            </div>
+            <div id="org-events-create" class="hidden top-gap">
+              <div class="card">
+                <form id="block-form" class="form-grid">
+                  <label class="field">Start date<input name="startDate" type="date" required /></label
+                  ><label class="field">End date<input name="endDate" type="date" required /></label
+                  ><label class="field wide"
+                    >Reason<textarea name="reason" rows="3" required maxlength="300"></textarea>
+                  </label>
+                  <div class="wide">
+                    <button class="btn primary" id="block-submit">Create event</button>
+                    <button class="btn hidden" type="button" id="block-reset">Cancel edit</button>
+                    <p id="block-status" class="muted" role="status"></p>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <div id="org-events-edit" class="hidden top-gap">
+              <div class="card"><div id="block-edit-list" class="grid"></div></div>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+    <footer>
+      Developed by:
+      <a
+        href="https://jesusvillota.github.io/"
+        target="_blank"
+        rel="noopener noreferrer"
+        >Jesus Villota</a
+      >
+    </footer>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
