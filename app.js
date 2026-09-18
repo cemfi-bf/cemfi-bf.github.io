@@ -168,11 +168,13 @@ const ORGANIZERS = {
   amengual: { name: "Dante Amengual", photo: "photos/amengual.png" },
   segura: { name: "Anatoli Segura", photo: "photos/segura.png" },
   villota: { name: "Jesus Villota", photo: "photos/villota.png" },
+  osberghaus: { name: "Alex Osberghaus", photo: "photos/osberghaus.png" },
 };
 const ORGANIZER_EMAILS = {
   dante: "dante@cemfi-bf-seminars.firebaseapp.com",
   anatoli: "anatoli@cemfi-bf-seminars.firebaseapp.com",
   jesus: "jesus@cemfi-bf-seminars.firebaseapp.com",
+  alex: "alex@cemfi-bf-seminars.firebaseapp.com",
 };
 const FACULTY_EMAILS = Object.fromEntries(
   PEOPLE.faculty.map((person) => [person.id, `${person.id}@cemfi-bf-seminars.firebaseapp.com`]),
