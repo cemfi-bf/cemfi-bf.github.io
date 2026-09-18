@@ -161,21 +161,9 @@ let availability = [],
   blocks = [],
   organizerId = null,
   facultyId = null,
-  loginName = "dante",
   editingBookingIds = { seminar: null, workshop: null },
   editingBlockId = null;
-const ORGANIZERS = {
-  amengual: { name: "Dante Amengual", photo: "photos/amengual.png" },
-  segura: { name: "Anatoli Segura", photo: "photos/segura.png" },
-  villota: { name: "Jesus Villota", photo: "photos/villota.png" },
-  osberghaus: { name: "Alex Osberghaus", photo: "photos/osberghaus.png" },
-};
-const ORGANIZER_EMAILS = {
-  dante: "dante@cemfi-bf-seminars.firebaseapp.com",
-  anatoli: "anatoli@cemfi-bf-seminars.firebaseapp.com",
-  jesus: "jesus@cemfi-bf-seminars.firebaseapp.com",
-  alex: "alex@cemfi-bf-seminars.firebaseapp.com",
-};
+const ORGANIZER_LOGIN_EMAIL = "dante@cemfi-bf-seminars.firebaseapp.com";
 const FACULTY_EMAILS = Object.fromEntries(
   PEOPLE.faculty.map((person) => [person.id, `${person.id}@cemfi-bf-seminars.firebaseapp.com`]),
 );
@@ -1259,13 +1247,12 @@ function renderPublicCalendar() {
   }
 }
 function renderOrganizerAuth() {
-  const organizer = ORGANIZERS[organizerId],
-    logged = Boolean(organizer);
+  const logged = Boolean(organizerId);
   $("organizer-login").classList.toggle("hidden", logged);
   $("organizer-dashboard").classList.toggle("hidden", !logged);
   if (logged) {
     $("organizer-welcome").innerHTML =
-      `${avatar(organizer)}<div><h3>Welcome, ${esc(organizer.name)}</h3><p class="muted">Organizer portal</p></div>`;
+      `${avatar({ name: "Organizer" })}<div><h3>Welcome, Organizer</h3><p class="muted">Organizer portal</p></div>`;
     showOrganizerPage(location.hash.slice(1) || "organizer");
   }
 }
@@ -1283,7 +1270,7 @@ function signOutAndReset() {
 function renderHeader() {
   const userEl = $("header-user"),
     person = organizerId
-      ? ORGANIZERS[organizerId]
+      ? { name: "Organizer" }
       : facultyId
         ? PEOPLE.faculty.find((p) => p.id === facultyId)
         : null,
@@ -1336,7 +1323,7 @@ $("organizer-login-form").onsubmit = async (e) => {
   try {
     const credential = await signInWithEmailAndPassword(
       auth,
-      ORGANIZER_EMAILS[loginName],
+      ORGANIZER_LOGIN_EMAIL,
       $("organizer-password").value,
     );
     await credential.user.getIdToken(true);
