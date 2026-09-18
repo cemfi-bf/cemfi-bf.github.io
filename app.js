@@ -1329,15 +1329,6 @@ function renderDynamic() {
     renderBlocks();
   }
 }
-document.querySelectorAll("[data-login-name]").forEach(
-  (button) =>
-    (button.onclick = () => {
-      loginName = button.dataset.loginName;
-      document
-        .querySelectorAll("[data-login-name]")
-        .forEach((x) => x.classList.toggle("active", x === button));
-    }),
-);
 $("organizer-login-form").onsubmit = async (e) => {
   e.preventDefault();
   const status = $("organizer-login-status");
