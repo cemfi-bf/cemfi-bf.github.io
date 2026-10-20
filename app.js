@@ -294,8 +294,13 @@ function builtInBlockFor(date) {
   if (JM_REHEARSAL_MONDAYS.includes(date)) return { reason: "JM Rehearsal presentations" };
   const month = Number(date.slice(5, 7)),
     md = date.slice(5);
-  if (month === 7 || month === 8 || md >= "12-22" || md <= "01-07" || inHolyWeek(date))
-    return { reason: "Non available" };
+  const holiday =
+    month === 7 || month === 8
+      ? "Summer holidays"
+      : md >= "12-22" || md <= "01-07"
+        ? "Christmas holidays"
+        : inHolyWeek(date) && "Easter holidays";
+  if (holiday) return { reason: `Non available – ${holiday}` };
 }
 // Spanish school Semana Santa: Holy Monday through Easter Monday (Easter Sunday: Gregorian computus).
 function inHolyWeek(date) {
