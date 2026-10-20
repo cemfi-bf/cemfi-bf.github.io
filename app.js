@@ -285,14 +285,31 @@ function allMondays() {
 function futureMondays() {
   return allMondays();
 }
-// Built-in blocks (not in Firestore): Mondays outside the course (Sep–Jun, every year)
+// Built-in blocks (not in Firestore): Mondays outside the course (Sep–Jun, every year),
+// Christmas break (22 Dec–7 Jan), Semana Santa,
 // and the JM Rehearsal Mondays of Oct 2026.
 const JM_REHEARSAL_MONDAYS = ["2026-10-19", "2026-10-26"];
 function builtInBlockFor(date) {
   if (!isMonday(date)) return;
   if (JM_REHEARSAL_MONDAYS.includes(date)) return { reason: "JM Rehearsal presentations" };
-  const month = Number(date.slice(5, 7));
-  if (month === 7 || month === 8) return { reason: "Non available" };
+  const month = Number(date.slice(5, 7)),
+    md = date.slice(5);
+  if (month === 7 || month === 8 || md >= "12-22" || md <= "01-07" || inHolyWeek(date))
+    return { reason: "Non available" };
+}
+// Spanish school Semana Santa: Holy Monday through Easter Monday (Easter Sunday: Gregorian computus).
+function inHolyWeek(date) {
+  const y = Number(date.slice(0, 4)),
+    a = y % 19,
+    b = Math.floor(y / 100),
+    c = y % 100,
+    g = Math.floor((b - Math.floor((b + 8) / 25) + 1) / 3),
+    h = (19 * a + b - Math.floor(b / 4) - g + 15) % 30,
+    l = (32 + 2 * (b % 4) + 2 * Math.floor(c / 4) - h - (c % 4)) % 7,
+    m = Math.floor((a + 11 * h + 22 * l) / 451),
+    easter = new Date(y, Math.floor((h + l - 7 * m + 114) / 31) - 1, ((h + l - 7 * m + 114) % 31) + 1, 12),
+    days = Math.round((fromISO(date) - easter) / 864e5);
+  return days >= -6 && days <= 1;
 }
 function blockFor(date) {
   return blocks.find((b) => b.startDate <= date && date <= b.endDate) || builtInBlockFor(date);
