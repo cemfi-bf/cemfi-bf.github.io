@@ -93,7 +93,11 @@ assert.strictEqual(box.querySelector(".cal-chip"), null, "dot chips are gone fro
   assert.ok(cell("2027-03-22").textContent.includes("Easter holidays"), "Holy Monday is Non available");
   assert.ok(cell("2027-03-29").textContent.includes("Easter holidays"), "Easter Monday is Non available");
   assert.strictEqual(cell("2027-03-15"), null, "ordinary March Monday is not blocked");
-  for (let i = 0; i < 5; i++) box.querySelector("#public-cal-prev").click(); // back to Oct
+  for (let i = 0; i < 7; i++) box.querySelector("#public-cal-next").click(); // Mar -> Oct 2027
+  assert.ok(cell("2027-10-18").textContent.includes("JM Rehearsal presentations"), "JM Rehearsal Monday 18 Oct 2027 blocked");
+  assert.ok(cell("2027-10-25").textContent.includes("JM Rehearsal presentations"), "JM Rehearsal Monday 25 Oct 2027 blocked");
+  assert.strictEqual(cell("2027-10-11"), null, "11 Oct 2027 stays open");
+  for (let i = 0; i < 12; i++) box.querySelector("#public-cal-prev").click(); // back to Oct 2026
 }
 
 // --- blocked day: red border + reason shown -------------------------------
