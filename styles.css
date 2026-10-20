@@ -319,6 +319,9 @@ footer a {
 .person-grid {
   grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
 }
+#faculty-cards {
+  grid-template-columns: repeat(4, 1fr);
+}
 .other-phd-list {
   max-height: 360px;
   overflow: auto;
@@ -830,6 +833,9 @@ button.calendar-day.monday.locked {
   }
 }
 @media (max-width: 700px) {
+  #faculty-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
   .form-grid {
     grid-template-columns: 1fr;
   }
