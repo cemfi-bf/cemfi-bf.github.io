@@ -76,6 +76,10 @@ assert.strictEqual(box.querySelector(".cal-chip"), null, "dot chips are gone fro
   assert.ok(cell("2026-10-19").textContent.includes("JM Rehearsal presentations"), "JM Rehearsal Monday 19 Oct blocked");
   assert.ok(cell("2026-10-26").textContent.includes("JM Rehearsal presentations"), "JM Rehearsal Monday 26 Oct blocked");
   assert.strictEqual(cell("2026-10-12").textContent.includes("JM Rehearsal"), false, "other Mondays are not blocked");
+  box.querySelector("#public-cal-next").click(); // Oct -> Nov
+  assert.ok(cell("2026-11-02").textContent.includes("CEMFI closed"), "2 Nov 2026 is a CEMFI closure");
+  assert.strictEqual(cell("2026-11-09"), null, "9 Nov 2026 stays open");
+  box.querySelector("#public-cal-prev").click(); // Nov -> Oct
   box.querySelector("#public-cal-prev").click();
   box.querySelector("#public-cal-prev").click(); // Oct -> Aug
   assert.ok(cell("2026-08-03").textContent.includes("Summer holidays"), "August Monday is Non available");
