@@ -27,7 +27,7 @@ window.eval(`
 `);
 
 // app.js dynamically imports the Firebase CDN inside a try/catch; make it fail fast.
-let code = fs.readFileSync(`${DIR}/app.js`, "utf8").replace(/await Promise\.all\(\[[\s\S]*?\]\);/, "await Promise.reject(new Error('offline'));");
+let code = fs.readFileSync(`${DIR}/app.js`, "utf8").replace(/^import .*history-archive.*$/m, "const HISTORY_ARCHIVE = [];").replace(/await Promise\.all\(\[[\s\S]*?\]\);/, "await Promise.reject(new Error('offline'));");
 window.eval(
   `(async()=>{ ${code} \n window.__cal = (b, r, bl) => { bookings = b; requests = r; blocks = bl; renderPublicCalendar(); }; window.__presenterPicker = presenterPicker; window.__setBookings = (b) => { bookings = b; }; })()`,
 );
@@ -71,6 +71,19 @@ assert.strictEqual(box.querySelector(".cal-chip"), null, "dot chips are gone fro
   assert.ok(style.includes("var(--green)"), "mixed day adds the workshop color");
 }
 
+// --- built-in blocks: JM Rehearsal Mondays, and Mondays outside Sep-Jun ---
+{
+  assert.ok(cell("2026-10-19").textContent.includes("JM Rehearsal presentations"), "JM Rehearsal Monday 19 Oct blocked");
+  assert.ok(cell("2026-10-26").textContent.includes("JM Rehearsal presentations"), "JM Rehearsal Monday 26 Oct blocked");
+  assert.strictEqual(cell("2026-10-12").textContent.includes("JM Rehearsal"), false, "other Mondays are not blocked");
+  box.querySelector("#public-cal-prev").click();
+  box.querySelector("#public-cal-prev").click(); // Oct -> Aug
+  assert.ok(cell("2026-08-03").textContent.includes("Non available"), "August Monday is Non available");
+  assert.strictEqual(cell("2026-08-04"), null, "August Tuesday is not blocked");
+  box.querySelector("#public-cal-next").click();
+  box.querySelector("#public-cal-next").click(); // back to Oct
+}
+
 // --- blocked day: red border + reason shown -------------------------------
 {
   const c = cell("2026-10-20");
@@ -91,7 +104,9 @@ assert.strictEqual(box.querySelector(".cal-chip"), null, "dot chips are gone fro
   const pickerBox = window.document.getElementById("presenter-date-calendar"),
     nextBtn = () => window.document.getElementById("presenter-calendar-next");
   nextBtn().click();
+  nextBtn().click();
   nextBtn().click(); // Aug 2026 -> Oct 2026 (today is pinned to 2026-10-15)
+  nextBtn().click(); // -> Nov 2026 (Oct's remaining Mondays are JM Rehearsal blocks)
   const monday = pickerBox.querySelector("button.calendar-day.monday");
   assert.ok(monday, "an available Monday renders as a clickable button before booking");
   const bookedDate = monday.dataset.date;
