@@ -273,7 +273,7 @@ const FACULTY_EMAILS = Object.fromEntries(
 })();
 
 function schoolYear() {
-  return { start: new Date(2026, 7, 1), end: new Date(2027, 6, 31) };
+  return { start: new Date(2026, 7, 1), end: new Date(2030, 6, 31) };
 }
 function allMondays() {
   const { start, end } = schoolYear(),
@@ -292,6 +292,8 @@ const FIXED_BLOCKS = {
   "2026-10-19": "JM Rehearsal presentations",
   "2026-10-26": "JM Rehearsal presentations",
   "2026-11-02": "CEMFI closed – public holiday",
+  "2027-10-18": "JM Rehearsal presentations",
+  "2027-10-25": "JM Rehearsal presentations",
 };
 function builtInBlockFor(date) {
   if (!isMonday(date)) return;
