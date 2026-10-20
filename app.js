@@ -286,7 +286,7 @@ function futureMondays() {
   return allMondays();
 }
 // Built-in blocks (not in Firestore): Mondays outside the course (Sep–Jun, every year),
-// Christmas break (22 Dec–7 Jan), Semana Santa,
+// Christmas break (24 Dec–6 Jan), Semana Santa,
 // and the JM Rehearsal Mondays of Oct 2026.
 const JM_REHEARSAL_MONDAYS = ["2026-10-19", "2026-10-26"];
 function builtInBlockFor(date) {
@@ -297,7 +297,7 @@ function builtInBlockFor(date) {
   const holiday =
     month === 7 || month === 8
       ? "Summer holidays"
-      : md >= "12-22" || md <= "01-07"
+      : md >= "12-24" || md <= "01-06"
         ? "Christmas holidays"
         : inHolyWeek(date) && "Easter holidays";
   if (holiday) return { reason: `Non available – ${holiday}` };
