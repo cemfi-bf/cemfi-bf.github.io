@@ -78,10 +78,18 @@ assert.strictEqual(box.querySelector(".cal-chip"), null, "dot chips are gone fro
   assert.strictEqual(cell("2026-10-12").textContent.includes("JM Rehearsal"), false, "other Mondays are not blocked");
   box.querySelector("#public-cal-prev").click();
   box.querySelector("#public-cal-prev").click(); // Oct -> Aug
-  assert.ok(cell("2026-08-03").textContent.includes("Non available"), "August Monday is Non available");
+  assert.ok(cell("2026-08-03").textContent.includes("Summer holidays"), "August Monday is Non available");
   assert.strictEqual(cell("2026-08-04"), null, "August Tuesday is not blocked");
   box.querySelector("#public-cal-next").click();
   box.querySelector("#public-cal-next").click(); // back to Oct
+  for (let i = 0; i < 2; i++) box.querySelector("#public-cal-next").click(); // Oct -> Dec
+  assert.ok(cell("2026-12-28").textContent.includes("Christmas holidays"), "Christmas-break Monday is Non available");
+  assert.strictEqual(cell("2026-12-14"), null, "mid-December Monday is not blocked");
+  for (let i = 0; i < 3; i++) box.querySelector("#public-cal-next").click(); // Dec -> Mar 2027 (Easter 28 Mar 2027)
+  assert.ok(cell("2027-03-22").textContent.includes("Easter holidays"), "Holy Monday is Non available");
+  assert.ok(cell("2027-03-29").textContent.includes("Easter holidays"), "Easter Monday is Non available");
+  assert.strictEqual(cell("2027-03-15"), null, "ordinary March Monday is not blocked");
+  for (let i = 0; i < 5; i++) box.querySelector("#public-cal-prev").click(); // back to Oct
 }
 
 // --- blocked day: red border + reason shown -------------------------------
