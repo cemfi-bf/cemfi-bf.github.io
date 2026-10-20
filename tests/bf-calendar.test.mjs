@@ -29,7 +29,7 @@ window.eval(`
 // app.js dynamically imports the Firebase CDN inside a try/catch; make it fail fast.
 let code = fs.readFileSync(`${DIR}/app.js`, "utf8").replace(/^import .*history-archive.*$/m, "const HISTORY_ARCHIVE = [];").replace(/await Promise\.all\(\[[\s\S]*?\]\);/, "await Promise.reject(new Error('offline'));");
 window.eval(
-  `(async()=>{ ${code} \n window.__cal = (b, r, bl) => { bookings = b; requests = r; blocks = bl; renderPublicCalendar(); }; window.__presenterPicker = presenterPicker; window.__setBookings = (b) => { bookings = b; }; })()`,
+  `(async()=>{ ${code} \n window.__cal = (b, r, bl) => { bookings = b; requests = r; blocks = bl; renderPublicCalendar(); }; window.__presenterPicker = presenterPicker; window.__showFaculty = showFacultyCalendar; window.__firstFaculty = PEOPLE.faculty[0].id; window.__setBookings = (b) => { bookings = b; }; })()`,
 );
 await new Promise((r) => setTimeout(r, 300));
 
@@ -98,6 +98,17 @@ assert.strictEqual(box.querySelector(".cal-chip"), null, "dot chips are gone fro
   assert.ok(cell("2027-10-25").textContent.includes("JM Rehearsal presentations"), "JM Rehearsal Monday 25 Oct 2027 blocked");
   assert.strictEqual(cell("2027-10-11"), null, "11 Oct 2027 stays open");
   for (let i = 0; i < 12; i++) box.querySelector("#public-cal-prev").click(); // back to Oct 2026
+}
+
+// --- faculty calendar: holidays and rehearsals show red and locked by default ---
+{
+  window.__showFaculty(window.__firstFaculty);
+  const day = (d) => window.document.querySelector(`#faculty-calendar [data-holiday="${d}"], #faculty-calendar [data-availability="${d}"]`);
+  assert.ok(!day("2026-10-19").classList.contains("unavailable"), "JM Rehearsal Monday is not red in faculty calendar");
+  assert.ok(!day("2026-11-02").classList.contains("unavailable"), "2 Nov closure is not red in faculty calendar");
+  assert.ok(day("2026-08-03").classList.contains("unavailable") && day("2026-08-03").disabled, "Summer Monday is red and locked in faculty calendar");
+  assert.ok(day("2026-12-28").classList.contains("unavailable"), "Christmas Monday is red in faculty calendar");
+  assert.ok(!day("2026-10-12").classList.contains("unavailable"), "ordinary Monday stays green");
 }
 
 // --- blocked day: red border + reason shown -------------------------------

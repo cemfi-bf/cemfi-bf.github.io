@@ -597,6 +597,9 @@ function showFacultyCalendar(id) {
             unavailable = availability.some(
               (a) => a.group === "seminar" && a.personId === id && a.date === date && a.available === false,
             );
+          const holiday = !FIXED_BLOCKS[date] && builtInBlockFor(date); // ponytail: rehearsals/closures stay out of faculty calendars
+          if (holiday)
+            return `<button type="button" class="calendar-day monday unavailable locked${date === todayISO ? " today" : ""}" data-holiday="${date}" disabled title="${esc(holiday.reason)}" aria-label="${esc(formatDate(date))}: ${esc(holiday.reason)}">${index + 1}</button>`;
           return mondaySet.has(date)
             ? `<button type="button" class="calendar-day monday${unavailable ? " unavailable" : ""}${unlocked ? "" : " locked"}${date === todayISO ? " today" : ""}" data-availability="${date}"${unlocked ? "" : " disabled"} aria-pressed="${unavailable}" aria-label="${esc(formatDate(date))}: ${unlocked ? (unavailable ? "unavailable; select to mark available" : "available; select to mark unavailable") : (unavailable ? "unavailable" : "available") + " (locked)"}">${index + 1}</button>`
             : `<span class="calendar-day${date === todayISO ? " today" : ""}">${index + 1}</span>`;
