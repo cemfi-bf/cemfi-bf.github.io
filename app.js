@@ -287,11 +287,15 @@ function futureMondays() {
 }
 // Built-in blocks (not in Firestore): Mondays outside the course (Sep–Jun, every year),
 // Christmas break (24 Dec–6 Jan), Semana Santa,
-// and the JM Rehearsal Mondays of Oct 2026.
-const JM_REHEARSAL_MONDAYS = ["2026-10-19", "2026-10-26"];
+// and one-off dates in FIXED_BLOCKS (JM Rehearsal Mondays, CEMFI closures).
+const FIXED_BLOCKS = {
+  "2026-10-19": "JM Rehearsal presentations",
+  "2026-10-26": "JM Rehearsal presentations",
+  "2026-11-02": "CEMFI closed – public holiday",
+};
 function builtInBlockFor(date) {
   if (!isMonday(date)) return;
-  if (JM_REHEARSAL_MONDAYS.includes(date)) return { reason: "JM Rehearsal presentations" };
+  if (FIXED_BLOCKS[date]) return { reason: FIXED_BLOCKS[date] };
   const month = Number(date.slice(5, 7)),
     md = date.slice(5);
   const holiday =
