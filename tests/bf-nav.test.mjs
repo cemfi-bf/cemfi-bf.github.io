@@ -14,7 +14,7 @@ const dom = new JSDOM(html, { url: "https://x.test/bf-seminars/", runScripts: "d
 const { window } = dom;
 
 // app.js dynamically imports the Firebase CDN inside a try/catch; make it fail fast.
-let code = fs.readFileSync(`${DIR}/app.js`, "utf8").replace(/await Promise\.all\(\[[\s\S]*?\]\);/, "await Promise.reject(new Error('offline'));");
+let code = fs.readFileSync(`${DIR}/app.js`, "utf8").replace(/^import .*history-archive.*$/m, "const HISTORY_ARCHIVE = [];").replace(/await Promise\.all\(\[[\s\S]*?\]\);/, "await Promise.reject(new Error('offline'));");
 window.eval(`(async()=>{ ${code} \n window.__view = view; window.__renderHeader = renderHeader; window.__setAuth = (o, f) => { organizerId = o; facultyId = f; }; })()`);
 await new Promise((r) => setTimeout(r, 300));
 

@@ -285,8 +285,17 @@ function allMondays() {
 function futureMondays() {
   return allMondays();
 }
+// Built-in blocks (not in Firestore): Mondays outside the course (Sep–Jun, every year)
+// and the JM Rehearsal Mondays of Oct 2026.
+const JM_REHEARSAL_MONDAYS = ["2026-10-19", "2026-10-26"];
+function builtInBlockFor(date) {
+  if (!isMonday(date)) return;
+  if (JM_REHEARSAL_MONDAYS.includes(date)) return { reason: "JM Rehearsal presentations" };
+  const month = Number(date.slice(5, 7));
+  if (month === 7 || month === 8) return { reason: "Non available" };
+}
 function blockFor(date) {
-  return blocks.find((b) => b.startDate <= date && date <= b.endDate);
+  return blocks.find((b) => b.startDate <= date && date <= b.endDate) || builtInBlockFor(date);
 }
 function bookedFor(date) {
   return bookings.find((b) => b.status === "confirmed" && b.date === date);
