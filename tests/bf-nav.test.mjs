@@ -27,7 +27,7 @@ const navLabels = () =>
 
 // --- default route -------------------------------------------------------
 assert.ok(visible("calendar-view"), "calendar is the default view");
-assert.deepStrictEqual(navLabels(), ["Calendar", "Book seminar", "Book workshop", "Faculty", "Organizer"]);
+assert.deepStrictEqual(navLabels(), ["Calendar", "History", "Book seminar", "Book workshop", "Faculty", "Organizer"]);
 assert.strictEqual(window.location.hash, "#calendar");
 
 // --- one click to each public view --------------------------------------
@@ -127,11 +127,11 @@ assert.strictEqual(window.document.body.innerHTML.match(/Back to/g), null, "no '
 
 // --- signed-in nav narrows to what view() will actually allow -----------
 window.__setAuth("amengual", null); window.__renderHeader();
-assert.deepStrictEqual(navLabels(), ["Calendar", "Organizer"], "organizer nav narrows");
+assert.deepStrictEqual(navLabels(), ["Calendar", "History", "Organizer"], "organizer nav narrows");
 window.__setAuth(null, "sentana"); window.__renderHeader();
-assert.deepStrictEqual(navLabels(), ["Calendar", "Faculty"], "faculty nav narrows");
+assert.deepStrictEqual(navLabels(), ["Calendar", "History", "Faculty"], "faculty nav narrows");
 window.__setAuth(null, null); window.__renderHeader();
-assert.strictEqual(navLabels().length, 5, "signing out restores the full nav");
+assert.strictEqual(navLabels().length, 6, "signing out restores the full nav");
 
 // --- theme cycles light -> dark -> red -> light --------------------------
 const seen = [];
