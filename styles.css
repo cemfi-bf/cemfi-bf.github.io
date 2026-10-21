@@ -576,6 +576,19 @@ footer a {
   gap: 0.5rem;
   margin-bottom: 0.6rem;
 }
+.date-calendar-jump {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+}
+.date-calendar-jump select {
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+}
 .date-calendar-nav strong,
 .faculty-calendar-month h4,
 .schedule-item .muted {

@@ -1235,7 +1235,7 @@ function renderPublicCalendar() {
           return `border-${side}:2px ${it.status === "pending" ? "dashed" : "solid"} ${typeColor[it.type]}`;
         })
         .join(";");
-  box.innerHTML = `<div class="date-calendar-nav"><button type="button" class="btn" id="public-cal-prev"${prev < minMonth ? " disabled" : ""}>Previous</button><strong>${esc(label)}</strong><button type="button" class="btn" id="public-cal-next"${next > maxMonth ? " disabled" : ""}>Next</button></div><div class="faculty-calendar-weekdays" aria-hidden="true">${weekdays.map((d) => `<span>${d}</span>`).join("")}</div><div class="faculty-calendar-days public-cal-days">${Array.from({ length: offset }, () => '<span class="calendar-day"></span>').join("")}${Array.from(
+  box.innerHTML = `<div class="date-calendar-nav"><button type="button" class="btn" id="public-cal-prev"${prev < minMonth ? " disabled" : ""}>Previous</button><span class="date-calendar-jump"><select id="public-cal-month" aria-label="Month">${Array.from({ length: 12 }, (_, m) => `<option value="${String(m + 1).padStart(2, "0")}"${m === first.getMonth() ? " selected" : ""}>${esc(new Date(2000, m, 1).toLocaleDateString(undefined, { month: "long" }))}</option>`).join("")}</select><select id="public-cal-year" aria-label="Year">${Array.from({ length: +maxMonth.slice(0, 4) - +minMonth.slice(0, 4) + 1 }, (_, i) => +minMonth.slice(0, 4) + i).map((y) => `<option${y === first.getFullYear() ? " selected" : ""}>${y}</option>`).join("")}</select><button type="button" class="btn" id="public-cal-today"${month === today ? " disabled" : ""}>Today</button></span><button type="button" class="btn" id="public-cal-next"${next > maxMonth ? " disabled" : ""}>Next</button></div><div class="faculty-calendar-weekdays" aria-hidden="true">${weekdays.map((d) => `<span>${d}</span>`).join("")}</div><div class="faculty-calendar-days public-cal-days">${Array.from({ length: offset }, () => '<span class="calendar-day"></span>').join("")}${Array.from(
     { length: days },
     (_, i) => {
       const date = `${month}-${String(i + 1).padStart(2, "0")}`,
@@ -1272,6 +1272,13 @@ function renderPublicCalendar() {
     publicCalMonth = next;
     renderPublicCalendar();
   };
+  const jump = (m) => {
+    publicCalMonth = m < minMonth ? minMonth : m > maxMonth ? maxMonth : m;
+    renderPublicCalendar();
+  };
+  $("public-cal-month").onchange = $("public-cal-year").onchange = () =>
+    jump(`${$("public-cal-year").value}-${$("public-cal-month").value}`);
+  $("public-cal-today").onclick = () => jump(today);
   box.querySelectorAll("[data-cal-date]").forEach(
     (b) =>
       (b.onclick = () => {
