@@ -100,6 +100,18 @@ assert.strictEqual(box.querySelector(".cal-chip"), null, "dot chips are gone fro
   for (let i = 0; i < 12; i++) box.querySelector("#public-cal-prev").click(); // back to Oct 2026
 }
 
+// --- jump navigation: month/year dropdowns and Today ---------------------
+{
+  const pick = (id, v) => { const el = box.querySelector(id); el.value = v; el.dispatchEvent(new window.Event("change")); };
+  pick("#public-cal-year", "2027"); // Oct 2026 -> Oct 2027 in one step
+  assert.ok(cell("2027-10-18").textContent.includes("JM Rehearsal presentations"), "year dropdown jumps a full year");
+  pick("#public-cal-month", "03"); // -> Mar 2027
+  assert.ok(cell("2027-03-22").textContent.includes("Easter holidays"), "month dropdown jumps to March");
+  box.querySelector("#public-cal-today").click();
+  assert.ok(cell("2026-10-19"), "Today returns to the current month");
+  assert.ok(box.querySelector("#public-cal-today").disabled, "Today is disabled on the current month");
+}
+
 // --- faculty calendar: holidays and rehearsals show red and locked by default ---
 {
   window.__showFaculty(window.__firstFaculty);
