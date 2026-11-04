@@ -142,10 +142,15 @@ assert.strictEqual(box.querySelector(".cal-chip"), null, "dot chips are gone fro
 {
   const pickerBox = window.document.getElementById("presenter-date-calendar"),
     nextBtn = () => window.document.getElementById("presenter-calendar-next");
+  // Today is pinned to 2026-10-15; Oct's remaining Mondays are JM Rehearsal blocks.
+  assert.ok(pickerBox.textContent.includes("October 2026"), "picker opens on the current month");
+  assert.strictEqual(window.document.getElementById("presenter-date").value, "", "no free Monday this month: date stays empty");
+  assert.ok(pickerBox.querySelector(".date-calendar-hint"), "hint shown when the month has no free day");
+  nextBtn().click(); // -> Nov 2026
+  assert.ok(!pickerBox.querySelector(".date-calendar-hint"), "no hint in a month with free days");
+  window.__presenterPicker.reset();
+  assert.ok(pickerBox.textContent.includes("October 2026"), "reset() returns to the current month");
   nextBtn().click();
-  nextBtn().click();
-  nextBtn().click(); // Aug 2026 -> Oct 2026 (today is pinned to 2026-10-15)
-  nextBtn().click(); // -> Nov 2026 (Oct's remaining Mondays are JM Rehearsal blocks)
   const monday = pickerBox.querySelector("button.calendar-day.monday");
   assert.ok(monday, "an available Monday renders as a clickable button before booking");
   const bookedDate = monday.dataset.date;

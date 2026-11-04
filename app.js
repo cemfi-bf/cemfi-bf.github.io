@@ -282,9 +282,6 @@ function allMondays() {
     if (d.getDay() === 1) out.push(iso(d));
   return out;
 }
-function futureMondays() {
-  return allMondays();
-}
 // Built-in blocks (not in Firestore): Mondays outside the course (Sep–Jun, every year),
 // Christmas break (24 Dec–6 Jan), Semana Santa,
 // and one-off dates in FIXED_BLOCKS (JM Rehearsal Mondays, CEMFI closures).
@@ -328,17 +325,17 @@ function blockFor(date) {
 function bookedFor(date) {
   return bookings.find((b) => b.status === "confirmed" && b.date === date);
 }
-function createDatePicker(prefix, { defaultDate = futureMondays()[0] || iso(new Date()), onChange }) {
-  const min = iso(new Date()),
-    max = iso(schoolYear().end),
+function createDatePicker(prefix, { onChange }) {
+  let min = iso(new Date()); // refreshed in reset() so a long-open tab does not go stale
+  const max = iso(schoolYear().end),
     dateEl = $(`${prefix}-date`),
     exceptionEl = $(`${prefix}-is-exception`),
     mondayEl = $(`${prefix}-date-mode-monday`),
     otherEl = $(`${prefix}-date-mode-other`),
     box = $(`${prefix}-date-calendar`);
-  let month = defaultDate.slice(0, 7),
+  let month = "",
     mode = "monday",
-    monday = defaultDate,
+    monday = "",
     other = "";
   const choose = (date, kind) => {
       if (blockFor(date) || bookedFor(date)) return;
@@ -381,6 +378,8 @@ function createDatePicker(prefix, { defaultDate = futureMondays()[0] || iso(new 
       ).join(
         "",
       )}${Array.from({ length: 42 - offset - days }, () => '<span class="calendar-day"></span>').join("")}</div>`;
+      if (!box.querySelector("button[data-date]"))
+        box.insertAdjacentHTML("beforeend", '<p class="muted date-calendar-hint">No free days this month. Use Next.</p>');
       $(`${prefix}-calendar-prev`).onclick = () => {
         month = prev;
         render();
@@ -418,19 +417,19 @@ function createDatePicker(prefix, { defaultDate = futureMondays()[0] || iso(new 
       onChange("", true);
     }
   };
+  // The displayed month is always the current one (clamped to the school year); the
+  // pre-selected date is separate: the first free Monday in that month, else empty.
   const reset = () => {
-    month = defaultDate.slice(0, 7);
+    min = iso(new Date());
+    const first = iso(schoolYear().start).slice(0, 7);
+    month = min.slice(0, 7) < first ? first : min.slice(0, 7) > max.slice(0, 7) ? max.slice(0, 7) : min.slice(0, 7);
     mode = "monday";
-    monday = defaultDate;
+    monday = allMondays().find((d) => d >= min && d.startsWith(month) && !blockFor(d) && !bookedFor(d)) || "";
     other = "";
-    dateEl.value = defaultDate;
+    dateEl.value = monday;
     exceptionEl.value = "false";
     mondayEl.checked = true;
     otherEl.checked = false;
-    if (blockFor(defaultDate)) {
-      dateEl.value = "";
-      other = "";
-    }
     render();
     onChange(dateEl.value, false);
   };
