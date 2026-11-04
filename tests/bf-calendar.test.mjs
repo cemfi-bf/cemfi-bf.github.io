@@ -1,6 +1,7 @@
 // B&F public calendar smoke test: seeds bookings/requests/blocks into the
-// evaluated app.js and checks the day-cell borders, dashed/solid pending
-// state, today fill, blocked reason, and presenter names.
+// evaluated app.js and checks the day-cell types, pending
+// state, today marker, blocked reason, and presenter names, in the default
+// year-overview layout and in each alternative layout.
 //
 //   npm install --no-save jsdom && node tests/bf-calendar.test.mjs
 import fs from "fs";
@@ -46,29 +47,31 @@ window.__cal(
   [{ startDate: "2026-10-20", endDate: "2026-10-20", reason: "Conference travel" }],
 );
 
-// --- confirmed seminar: solid accent border, presenter name, no dots ----
+// --- default layout is the year overview ---------------------------------
+assert.ok(box.querySelector(".cal-year"), "year overview is the default layout");
+assert.strictEqual(box.querySelector('[data-cal-view="year"]').getAttribute("aria-pressed"), "true");
+
+// --- confirmed seminar: seminar type, presenter name, not pending ---------
 {
   const c = cell("2026-10-12");
   assert.ok(c, "confirmed seminar day is a button");
-  assert.ok(c.getAttribute("style").includes("solid var(--accent)"), "confirmed seminar border is solid accent");
-  assert.ok(!c.getAttribute("style").includes("dashed"), "confirmed seminar border is not dashed");
+  assert.ok(c.classList.contains("t-seminar"), "confirmed seminar day has the seminar type");
+  assert.ok(!c.getAttribute("aria-label").includes("pending"), "confirmed seminar is not pending");
   assert.ok(c.textContent.includes("Anna Cieslak"), "presenter name is shown in the cell");
 }
-assert.strictEqual(box.querySelector(".cal-chip"), null, "dot chips are gone from the calendar");
 
-// --- pending seminar: dashed accent border --------------------------------
+// --- pending seminar: flagged pending -------------------------------------
 {
   const c = cell("2026-10-13");
-  const style = c.getAttribute("style");
-  assert.ok(style.includes("dashed var(--accent)"), "pending seminar border is dashed accent");
+  assert.ok(c.getAttribute("aria-label").includes("(pending)"), "pending seminar is flagged pending");
   assert.ok(c.textContent.includes("Marc Lopez"), "pending presenter name is shown");
 }
 
-// --- mixed day: seminar + workshop borders on the same cell --------------
+// --- mixed day: seminar + workshop on the same cell ----------------------
 {
-  const style = cell("2026-10-14").getAttribute("style");
-  assert.ok(style.includes("var(--accent)"), "mixed day keeps the seminar color");
-  assert.ok(style.includes("var(--green)"), "mixed day adds the workshop color");
+  const label = cell("2026-10-14").getAttribute("aria-label");
+  assert.ok(label.includes("seminar"), "mixed day keeps the seminar");
+  assert.ok(label.includes("workshop"), "mixed day adds the workshop");
 }
 
 // --- built-in blocks: JM Rehearsal Mondays, and Mondays outside Sep-Jun ---
@@ -126,16 +129,42 @@ assert.strictEqual(box.querySelector(".cal-chip"), null, "dot chips are gone fro
 // --- blocked day: red border + reason shown -------------------------------
 {
   const c = cell("2026-10-20");
-  assert.ok(c.getAttribute("style").includes("var(--red)"), "blocked day border is red");
+  assert.ok(c.classList.contains("t-blocked"), "blocked day has the blocked type");
   assert.ok(c.textContent.includes("Conference travel"), "block reason is shown in the cell");
 }
 
 // --- today: plain (event-less) cell keeps the .today class ---------------
 {
-  const today = box.querySelector(".calendar-day.today");
+  const today = box.querySelector(".cal-day.today");
   assert.ok(today, "today cell is marked");
-  assert.strictEqual(today.tagName, "SPAN", "event-less today cell has no button chrome");
+  assert.strictEqual(today.tagName, "DIV", "event-less today cell has no button chrome");
   assert.ok(!today.classList.contains("past"), "today is not dimmed as past");
+}
+
+// --- layouts: each one shows names, opens the detail card, and is remembered ---
+{
+  const pressed = (v) => box.querySelector(`[data-cal-view="${v}"]`).getAttribute("aria-pressed") === "true";
+  for (const [view, marker] of [["grid", ".cal-soft"], ["editorial", ".cal-editorial"], ["agenda", ".cal-agenda"], ["year", ".cal-year"]]) {
+    box.querySelector(`[data-cal-view="${view}"]`).click();
+    assert.ok(pressed(view) && box.querySelector(marker), `${view} layout renders`);
+    assert.strictEqual(window.localStorage.getItem("bfs-cal-view"), view, `${view} layout is remembered`);
+    assert.ok(cell("2026-10-12").textContent.includes("Anna Cieslak") || box.textContent.includes("Anna Cieslak"), `${view}: presenter shown`);
+    assert.ok(box.textContent.includes("Conference travel"), `${view}: block reason shown`);
+    box.querySelector(`[data-cal-date="2026-10-14"]`).click();
+    const detail = window.document.getElementById("public-calendar-detail");
+    if (view === "agenda") {
+      assert.ok(detail.classList.contains("hidden"), "agenda shows details inline");
+      assert.ok(box.querySelector(".cal-row.sel"), "agenda marks the selected row");
+    } else {
+      assert.ok(!detail.classList.contains("hidden") && detail.textContent.includes("Marc Lopez"), `${view}: detail card opens`);
+    }
+  }
+  // type filter hides seminars (and the toggle is reversible)
+  box.querySelector('[data-cal-filter="seminar"]').click();
+  assert.strictEqual(cell("2026-10-12"), null, "hiding seminars removes seminar days");
+  assert.ok(cell("2026-10-14"), "the workshop on a mixed day stays");
+  box.querySelector('[data-cal-filter="seminar"]').click();
+  assert.ok(cell("2026-10-12"), "showing seminars brings them back");
 }
 
 // --- booking date picker: a confirmed date renders unavailable (red) ------
@@ -175,9 +204,10 @@ assert.strictEqual(box.querySelector(".cal-chip"), null, "dot chips are gone fro
   // "today" is pinned to 2026-10-15; Oct 12 (event) and Oct 1 (empty) are past.
   assert.ok(cell("2026-10-12").classList.contains("past"), "past event day is dimmed");
   assert.ok(!cell("2026-10-20").classList.contains("past"), "future event day is not dimmed");
-  const dayOne = [...box.querySelectorAll("span.calendar-day")].find((el) => el.textContent.trim() === "1");
+  const emptyDay = (n) => [...box.querySelectorAll("div.cal-day")].find((el) => el.querySelector(".cal-n")?.textContent.endsWith(` ${n}`));
+  const dayOne = emptyDay(1);
   assert.ok(dayOne.classList.contains("past"), "past empty day is dimmed");
-  const dayTwentyFive = [...box.querySelectorAll("span.calendar-day")].find((el) => el.textContent.trim() === "25");
+  const dayTwentyFive = emptyDay(25);
   assert.ok(!dayTwentyFive.classList.contains("past"), "future empty day is not dimmed");
 }
 

@@ -1177,20 +1177,183 @@ function exportICS(events) {
   lines.push("END:VCALENDAR");
   download("bf-seminars-history.ics", "text/calendar;charset=utf-8", `${lines.join("\r\n")}\r\n`);
 }
-function renderPublicCalDetail(evs, date) {
-  const box = $("public-calendar-detail"),
-    block = blockFor(date || evs?.[0]?.date);
-  if ((!evs || !evs.length) && !block) {
+const CAL_VIEWS = { year: "Year overview", grid: "Soft grid", agenda: "Agenda", editorial: "Editorial" },
+  CAL_TYPES = { seminar: "Seminar", workshop: "PhD workshop", blocked: "Blocked" },
+  CAL_WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+  CAL_VIEW_KEY = "bfs-cal-view";
+let publicCalView = "year";
+try {
+  const saved = localStorage.getItem(CAL_VIEW_KEY);
+  if (saved in CAL_VIEWS) publicCalView = saved;
+} catch {}
+const publicCalHidden = new Set();
+const calLabel = (it) => it.label || it.presenter || it.title || "TBD";
+const calWhen = (date, today) => (date === today ? " today" : date < today ? " past" : "");
+const calMeta = (e) =>
+  `${e.presenter ? `<b>${esc(e.presenter)}</b>${e.affiliation ? ` · ${esc(e.affiliation)}` : ""} · ` : ""}${esc(e.startTime)}–${esc(e.endTime)} · ${CAL_TYPES[e.type]}`;
+function calItems(ctx, date) {
+  const block = publicCalHidden.has("blocked") ? null : blockFor(date);
+  return [...(block ? [{ type: "blocked", status: "confirmed", label: block.reason }] : []), ...(ctx.byDate[date] || [])];
+}
+// A day is a button only when it has something to show; extra is the view-specific class list.
+function calDay(ctx, date, items, extra, inner) {
+  const when = calWhen(date, ctx.todayISO);
+  if (!items.length) return `<div class="cal-day${when} ${extra}">${inner}</div>`;
+  const summary = items
+    .map((it) => `${it.type}, ${calLabel(it)}${it.status === "pending" ? " (pending)" : ""}`)
+    .join("; ");
+  return `<button type="button" class="cal-day has t-${items[0].type}${when}${date === publicCalSelected ? " sel" : ""} ${extra}" data-cal-date="${date}" title="${esc(summary)}" aria-label="${esc(formatDate(date))}: ${esc(summary)}">${inner}</button>`;
+}
+const calChip = (it) =>
+  `<span class="cal-chip t-${it.type}${it.status === "pending" ? " pending" : ""}">${esc(calLabel(it))}</span>`;
+const calDays = (ctx, fn) => Array.from({ length: ctx.days }, (_, i) => fn(i + 1, `${ctx.month}-${String(i + 1).padStart(2, "0")}`)).join("");
+function calNav(ctx) {
+  const opts = (values, selected, text) =>
+    values.map((v) => `<option value="${v}"${v === selected ? " selected" : ""}>${text(v)}</option>`).join("");
+  return `<div class="cal-nav"><button type="button" class="btn icon" id="public-cal-prev" aria-label="Previous month"${ctx.prev < ctx.minMonth ? " disabled" : ""}>‹</button><select id="public-cal-month" aria-label="Month">${opts(
+    Array.from({ length: 12 }, (_, m) => String(m + 1).padStart(2, "0")),
+    ctx.month.slice(5),
+    (m) => esc(new Date(2000, +m - 1, 1).toLocaleDateString(undefined, { month: "long" })),
+  )}</select><select id="public-cal-year" aria-label="Year">${opts(
+    Array.from({ length: +ctx.maxMonth.slice(0, 4) - +ctx.minMonth.slice(0, 4) + 1 }, (_, i) => String(+ctx.minMonth.slice(0, 4) + i)),
+    ctx.month.slice(0, 4),
+    (y) => y,
+  )}</select><button type="button" class="btn" id="public-cal-today"${ctx.month === ctx.todayISO.slice(0, 7) ? " disabled" : ""}>Today</button><button type="button" class="btn icon" id="public-cal-next" aria-label="Next month"${ctx.next > ctx.maxMonth ? " disabled" : ""}>›</button></div>`;
+}
+const calHead = (ctx) =>
+  `<div class="cal-head"><h3 class="cal-title">${esc(ctx.name)} <span>${ctx.year}</span></h3>${calNav(ctx)}</div>`;
+const calWeekdays = () => `<div class="cal-wd" aria-hidden="true">${CAL_WEEKDAYS.map((d) => `<span>${d}</span>`).join("")}</div>`;
+const calBlanks = (n) => '<div class="cal-day empty"></div>'.repeat(n);
+function calFilters() {
+  return `<div class="cal-filters" role="group" aria-label="Show">${Object.entries(CAL_TYPES)
+    .map(
+      ([k, v]) =>
+        `<button type="button" class="cal-filter t-${k}" data-cal-filter="${k}" aria-pressed="${!publicCalHidden.has(k)}"><span class="cal-dot"></span>${v}</button>`,
+    )
+    .join("")}<span class="cal-filter t-seminar"><span class="cal-dot pending"></span>Pending</span></div>`;
+}
+function calGridView(ctx) {
+  const cells = calDays(ctx, (d, date) => {
+    const items = calItems(ctx, date),
+      weekend = (ctx.offset + d - 1) % 7 > 4;
+    return calDay(
+      ctx,
+      date,
+      items,
+      weekend ? "we" : "",
+      `<span class="cal-num">${d}</span>${items.slice(0, 2).map(calChip).join("")}${items.length > 2 ? `<span class="cal-more">+${items.length - 2} more</span>` : ""}`,
+    );
+  });
+  return `<div class="cal-soft">${calHead(ctx)}${calWeekdays()}<div class="cal-cells">${calBlanks(ctx.offset)}${cells}</div></div>`;
+}
+function calEditorialView(ctx) {
+  const cells = calDays(ctx, (d, date) => {
+    const items = calItems(ctx, date);
+    return calDay(
+      ctx,
+      date,
+      items,
+      (ctx.offset + d - 1) % 7 === 0 ? "mon" : "",
+      `<span class="cal-num">${d}</span>${items
+        .slice(0, 2)
+        .map(
+          (it) =>
+            `<span class="cal-line${it.status === "pending" ? " pending" : ""}"><span class="cal-dot t-${it.type}${it.status === "pending" ? " pending" : ""}"></span><span>${esc(calLabel(it))}</span></span>`,
+        )
+        .join("")}${items.length > 2 ? `<span class="cal-more">+${items.length - 2}</span>` : ""}`,
+    );
+  });
+  const trailing = Math.ceil((ctx.offset + ctx.days) / 7) * 7 - ctx.offset - ctx.days;
+  return `<div class="cal-editorial">${calHead(ctx)}${calWeekdays()}<div class="cal-cells">${calBlanks(ctx.offset)}${cells}${calBlanks(trailing)}</div></div>`;
+}
+function calYearView(ctx) {
+  // Academic year runs Sep–Jun; Jul/Aug belong to the year that just ended.
+  const startYear = ctx.mo >= 9 ? ctx.year : ctx.year - 1,
+    months = [9, 10, 11, 12, 1, 2, 3, 4, 5, 6].map((mo) => `${mo >= 9 ? startYear : startYear + 1}-${String(mo).padStart(2, "0")}`),
+    chips = months
+      .map((m) => {
+        const first = fromISO(`${m}-01`),
+          n = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
+        let count = 0,
+          heat = '<i class="n"></i>'.repeat((first.getDay() + 6) % 7);
+        for (let d = 1; d <= n; d++) {
+          const items = calItems(ctx, `${m}-${String(d).padStart(2, "0")}`),
+            it = items[0];
+          count += items.filter((x) => x.type !== "blocked").length;
+          heat += `<i class="${it ? (it.type === "blocked" ? "b" : it.status === "pending" ? "p" : it.type === "seminar" ? "s" : "w") : ""}"></i>`;
+        }
+        const name = first.toLocaleDateString(undefined, { month: "long", year: "numeric" });
+        return `<button type="button" class="cal-month${m === ctx.month ? " sel" : ""}${m === ctx.todayISO.slice(0, 7) ? " cur" : ""}" data-cal-month="${m}"${m < ctx.minMonth || m > ctx.maxMonth ? " disabled" : ""} aria-label="${esc(name)}: ${count} event${count === 1 ? "" : "s"}"><strong>${esc(first.toLocaleDateString(undefined, { month: "short" }))} ’${String(first.getFullYear()).slice(2)}</strong><small>${count} event${count === 1 ? "" : "s"}</small><span class="cal-heat">${heat}</span></button>`;
+      })
+      .join(""),
+    weeks = Array.from({ length: Math.ceil((ctx.offset + ctx.days) / 7) }, (_, w) => {
+      const first = Math.max(1, w * 7 - ctx.offset + 1),
+        last = Math.min(ctx.days, w * 7 - ctx.offset + 7),
+        todayDay = ctx.todayISO.startsWith(ctx.month) ? +ctx.todayISO.slice(8) : 0,
+        strip = Array.from({ length: 7 }, (_, c) => {
+          const d = w * 7 + c - ctx.offset + 1;
+          if (d < 1 || d > ctx.days) return calBlanks(1);
+          const date = `${ctx.month}-${String(d).padStart(2, "0")}`,
+            items = calItems(ctx, date);
+          return calDay(
+            ctx,
+            date,
+            items,
+            "",
+            `<span class="cal-n">${CAL_WEEKDAYS[c]} ${d}</span>${items.length ? `<span class="cal-t">${esc(calLabel(items[0]))}${items.length > 1 ? ` +${items.length - 1}` : ""}</span>` : ""}`,
+          );
+        }).join("");
+      return `<div class="cal-week"><div class="cal-wk${todayDay >= first && todayDay <= last ? " now" : ""}">Week ${w + 1}<b>${first === last ? first : `${first}–${last}`} ${esc(ctx.first.toLocaleDateString(undefined, { month: "short" }))}</b></div><div class="cal-strip">${strip}</div></div>`;
+    }).join("");
+  return `<div class="cal-year"><h3 class="cal-year-label">Academic year ${startYear}–${String(startYear + 1).slice(2)} at a glance</h3><div class="cal-months">${chips}</div>${calHead(ctx)}${weeks}</div>`;
+}
+function calAgendaView(ctx) {
+  const dates = Object.keys(ctx.byDate).filter((d) => d.startsWith(ctx.month)),
+    blockedDates = Array.from({ length: ctx.days }, (_, i) => `${ctx.month}-${String(i + 1).padStart(2, "0")}`).filter((d) =>
+      publicCalHidden.has("blocked") ? false : blockFor(d),
+    ),
+    agendaDates = [...new Set([...dates, ...blockedDates])].sort(),
+    prevDays = new Date(ctx.first.getFullYear(), ctx.first.getMonth(), 0).getDate(),
+    mini =
+      CAL_WEEKDAYS.map((d) => `<span class="h">${d[0]}</span>`).join("") +
+      Array.from({ length: ctx.offset }, (_, i) => `<span class="cal-day out">${prevDays - ctx.offset + 1 + i}</span>`).join("") +
+      calDays(ctx, (d, date) => {
+        const items = calItems(ctx, date),
+          types = [...new Set(items.map((it) => it.type))];
+        return calDay(ctx, date, items, "", `${d}${items.length ? `<i>${types.map((t) => `<b class="t-${t}"></b>`).join("")}</i>` : ""}`);
+      }),
+    rows = agendaDates
+      .map((date) => {
+        const dt = fromISO(date),
+          selected = date === publicCalSelected;
+        return `<article class="cal-row${calWhen(date, ctx.todayISO)}${selected ? " sel" : ""}" data-cal-date="${date}" tabindex="0" aria-label="${esc(formatDate(date))}"><div class="cal-dateblock"><b>${dt.getDate()}</b><span>${esc(dt.toLocaleDateString(undefined, { weekday: "short" }))}</span></div><div>${calItems(ctx, date)
+          .map((e) =>
+            e.type === "blocked"
+              ? `<div class="cal-card t-blocked"><span class="cal-pill t-blocked">Blocked</span><h4>${esc(e.label)}</h4></div>`
+              : `<div class="cal-card t-${e.type}${e.status === "pending" ? " pending" : ""}"><span class="cal-pill${e.status === "pending" ? " pending" : ""}">${e.status === "pending" ? "Pending" : "Confirmed"}</span><h4>${esc(e.title || "(untitled)")}</h4><div class="cal-meta">${calMeta(e)}</div>${selected && e.coauthors ? `<p class="cal-meta"><b>Coauthors:</b> ${esc(e.coauthors)}</p>` : ""}${selected && e.abstract ? `<p class="cal-meta">${esc(e.abstract)}</p>` : ""}</div>`,
+          )
+          .join("")}</div></article>`;
+      })
+      .join(""),
+    next = ctx.events
+      .filter((e) => e.type === "seminar" && e.status === "confirmed" && e.date >= ctx.todayISO)
+      .sort((a, b) => a.date.localeCompare(b.date))[0];
+  return `<div class="cal-agenda">${next ? `<div class="cal-next"><small>Next seminar</small><h4>${esc(next.title || "(title to be announced)")}</h4><div>${next.presenter ? `${esc(next.presenter)}${next.affiliation ? ` · ${esc(next.affiliation)}` : ""} — ` : ""}${esc(formatDate(next.date))}, ${esc(next.startTime)}</div></div>` : ""}${calHead(ctx)}<div class="cal-split"><aside class="cal-mini"><div class="cal-mini-grid">${mini}</div>${calFilters()}</aside><section><p class="muted">${agendaDates.length ? `${agendaDates.length} date${agendaDates.length === 1 ? "" : "s"} with activity` : "Nothing scheduled this month."}</p>${rows}</section></div></div>`;
+}
+function renderPublicCalDetail(items, date) {
+  const box = $("public-calendar-detail");
+  if (!items || !items.length) {
     box.classList.add("hidden");
     return;
   }
   box.classList.remove("hidden");
   box.innerHTML =
-    `<h3>${esc(formatDate(date || evs[0].date))}</h3>${block ? `<div class="notice error">Blocked: ${esc(block.reason)}</div>` : ""}` +
-    (evs || [])
-      .map(
-        (e) =>
-          `<div class="schedule-item type-${e.type}"><div class="toolbar"><div><h4>${esc(e.title || "(untitled)")}</h4><p class="muted">${esc(e.startTime)}–${esc(e.endTime)} · ${e.type === "seminar" ? "B&amp;F Seminar" : "Brown Bag / PhD Workshop"}</p></div><span class="badge ${e.status === "pending" ? "status-pending" : "status-confirmed"}">${e.status === "pending" ? "Pending" : "Confirmed"}</span></div>${e.presenter ? `<p class="details"><strong>${esc(e.presenter)}</strong>${e.affiliation ? ` · ${esc(e.affiliation)}` : ""}</p>` : ""}${e.coauthors ? `<p class="details"><strong>Coauthors:</strong> ${esc(e.coauthors)}</p>` : ""}${e.abstract ? `<p class="details"><strong>Abstract:</strong> ${esc(e.abstract)}</p>` : ""}</div>`,
+    `<h3>${esc(formatDate(date))}</h3>` +
+    items
+      .map((e) =>
+        e.type === "blocked"
+          ? `<div class="cal-ev t-blocked"><h4>Blocked: ${esc(e.label)}</h4><span class="cal-pill t-blocked">Blocked</span></div>`
+          : `<div class="cal-ev t-${e.type}"><h4>${esc(e.title || "(untitled)")}</h4><span class="cal-pill${e.status === "pending" ? " pending" : ""}">${e.status === "pending" ? "Pending" : "Confirmed"}</span><p>${calMeta(e)}</p>${e.coauthors ? `<p><b>Coauthors:</b> ${esc(e.coauthors)}</p>` : ""}${e.abstract ? `<p><b>Abstract:</b> ${esc(e.abstract)}</p>` : ""}</div>`,
       )
       .join("");
 }
@@ -1198,17 +1361,15 @@ function renderPublicCalendar() {
   const box = $("public-calendar");
   if (!box) return;
   const events = publicEvents(),
-    byDate = {};
-  events.forEach((e) => (byDate[e.date] = byDate[e.date] || []).push(e));
-  const monthsWithItems = [
+    todayISO = iso(new Date()),
+    today = todayISO.slice(0, 7),
+    monthsWithItems = [
       ...new Set([
         ...events.map((e) => e.date.slice(0, 7)),
         ...blocks.flatMap((b) => [b.startDate.slice(0, 7), b.endDate.slice(0, 7)]),
       ]),
     ].sort(),
     sy = schoolYear(),
-    today = iso(new Date()).slice(0, 7),
-    todayISO = iso(new Date()),
     minMonth = [iso(sy.start).slice(0, 7), ...monthsWithItems].sort()[0],
     maxMonth = [iso(sy.end).slice(0, 7), ...monthsWithItems].sort().slice(-1)[0];
   let month = publicCalMonth;
@@ -1220,77 +1381,68 @@ function renderPublicCalendar() {
     if (monthsWithItems.length) publicCalMonth = month;
   }
   const first = fromISO(`${month}-01`),
-    days = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate(),
-    offset = (first.getDay() + 6) % 7,
-    label = first.toLocaleDateString(undefined, { month: "long", year: "numeric" }),
-    prev = iso(new Date(first.getFullYear(), first.getMonth() - 1, 1)).slice(0, 7),
-    next = iso(new Date(first.getFullYear(), first.getMonth() + 1, 1)).slice(0, 7),
-    weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-    typeColor = { seminar: "var(--accent)", workshop: "var(--green)", blocked: "var(--red)" },
-    sideStyle = (items) =>
-      ["top", "right", "bottom", "left"]
-        .map((side, i) => {
-          const it = items[Math.floor((i * items.length) / 4)];
-          return `border-${side}:2px ${it.status === "pending" ? "dashed" : "solid"} ${typeColor[it.type]}`;
-        })
-        .join(";");
-  box.innerHTML = `<div class="date-calendar-nav"><button type="button" class="btn" id="public-cal-prev"${prev < minMonth ? " disabled" : ""}>Previous</button><span class="date-calendar-jump"><select id="public-cal-month" aria-label="Month">${Array.from({ length: 12 }, (_, m) => `<option value="${String(m + 1).padStart(2, "0")}"${m === first.getMonth() ? " selected" : ""}>${esc(new Date(2000, m, 1).toLocaleDateString(undefined, { month: "long" }))}</option>`).join("")}</select><select id="public-cal-year" aria-label="Year">${Array.from({ length: +maxMonth.slice(0, 4) - +minMonth.slice(0, 4) + 1 }, (_, i) => +minMonth.slice(0, 4) + i).map((y) => `<option${y === first.getFullYear() ? " selected" : ""}>${y}</option>`).join("")}</select><button type="button" class="btn" id="public-cal-today"${month === today ? " disabled" : ""}>Today</button></span><button type="button" class="btn" id="public-cal-next"${next > maxMonth ? " disabled" : ""}>Next</button></div><div class="faculty-calendar-weekdays" aria-hidden="true">${weekdays.map((d) => `<span>${d}</span>`).join("")}</div><div class="faculty-calendar-days public-cal-days">${Array.from({ length: offset }, () => '<span class="calendar-day"></span>').join("")}${Array.from(
-    { length: days },
-    (_, i) => {
-      const date = `${month}-${String(i + 1).padStart(2, "0")}`,
-        evs = byDate[date] || [],
-        block = blockFor(date),
-        items = [...(block ? [{ type: "blocked", status: "confirmed", label: block.reason }] : []), ...evs];
-      if (!items.length)
-        return `<span class="calendar-day${date === todayISO ? " today" : date < todayISO ? " past" : ""}">${i + 1}</span>`;
-      const NAMES_SHOWN = 2,
-        names = items
-          .slice(0, NAMES_SHOWN)
-          .map(
-            (it) =>
-              `<span class="cal-name ${it.type}${it.status === "pending" ? " pending" : ""}">${esc(it.label || it.presenter || it.title || "TBD")}</span>`,
-          )
-          .join(""),
-        overflow = items.length > NAMES_SHOWN ? `<span class="cal-name-more">+${items.length - NAMES_SHOWN}</span>` : "",
-        summary = items
-          .map(
-            (it) =>
-              `${it.type}, ${it.label || it.presenter || it.title || "TBD"}${it.status === "pending" ? " (pending)" : ""}`,
-          )
-          .join("; ");
-      return `<button type="button" class="calendar-day has-events${date === publicCalSelected ? " selected" : ""}${date === todayISO ? " today" : date < todayISO ? " past" : ""}" style="${sideStyle(items)}" data-cal-date="${date}" title="${esc(summary)}" aria-label="${esc(formatDate(date))}: ${esc(summary)}"><span>${i + 1}</span><span class="cal-names">${names}${overflow}</span></button>`;
-    },
-  ).join(
-    "",
-  )}${Array.from({ length: 42 - offset - days }, () => '<span class="calendar-day"></span>').join("")}</div>`;
-  $("public-cal-prev").onclick = () => {
-    publicCalMonth = prev;
-    renderPublicCalendar();
+    byDate = {};
+  events.filter((e) => !publicCalHidden.has(e.type)).forEach((e) => (byDate[e.date] = byDate[e.date] || []).push(e));
+  const ctx = {
+    events,
+    byDate,
+    month,
+    first,
+    todayISO,
+    minMonth,
+    maxMonth,
+    year: first.getFullYear(),
+    mo: first.getMonth() + 1,
+    days: new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate(),
+    offset: (first.getDay() + 6) % 7,
+    name: first.toLocaleDateString(undefined, { month: "long" }),
+    prev: iso(new Date(first.getFullYear(), first.getMonth() - 1, 1)).slice(0, 7),
+    next: iso(new Date(first.getFullYear(), first.getMonth() + 1, 1)).slice(0, 7),
   };
-  $("public-cal-next").onclick = () => {
-    publicCalMonth = next;
-    renderPublicCalendar();
-  };
-  const jump = (m) => {
-    publicCalMonth = m < minMonth ? minMonth : m > maxMonth ? maxMonth : m;
-    renderPublicCalendar();
-  };
+  const views = { year: calYearView, grid: calGridView, agenda: calAgendaView, editorial: calEditorialView };
+  box.innerHTML = `<div class="cal-top"><div class="cal-switch" role="group" aria-label="Calendar layout">${Object.entries(CAL_VIEWS)
+    .map(([k, v]) => `<button type="button" data-cal-view="${k}" aria-pressed="${k === publicCalView}">${v}</button>`)
+    .join("")}</div>${publicCalView === "agenda" ? "" : calFilters()}</div>${views[publicCalView](ctx)}`;
+  const rerender = () => renderPublicCalendar(),
+    jump = (m) => {
+      publicCalMonth = m < minMonth ? minMonth : m > maxMonth ? maxMonth : m;
+      rerender();
+    };
+  $("public-cal-prev").onclick = () => jump(ctx.prev);
+  $("public-cal-next").onclick = () => jump(ctx.next);
   $("public-cal-month").onchange = $("public-cal-year").onchange = () =>
     jump(`${$("public-cal-year").value}-${$("public-cal-month").value}`);
   $("public-cal-today").onclick = () => jump(today);
-  box.querySelectorAll("[data-cal-date]").forEach(
+  box.querySelectorAll("[data-cal-view]").forEach(
     (b) =>
       (b.onclick = () => {
-        publicCalSelected = b.dataset.calDate;
-        renderPublicCalendar();
+        publicCalView = b.dataset.calView;
+        try {
+          localStorage.setItem(CAL_VIEW_KEY, publicCalView);
+        } catch {}
+        rerender();
       }),
   );
-  if (publicCalSelected && (byDate[publicCalSelected] || blockFor(publicCalSelected)))
-    renderPublicCalDetail(byDate[publicCalSelected], publicCalSelected);
-  else {
-    publicCalSelected = null;
-    renderPublicCalDetail(null);
-  }
+  box.querySelectorAll("[data-cal-filter]").forEach(
+    (b) =>
+      (b.onclick = () => {
+        const t = b.dataset.calFilter;
+        publicCalHidden.has(t) ? publicCalHidden.delete(t) : publicCalHidden.add(t);
+        rerender();
+      }),
+  );
+  box.querySelectorAll("[data-cal-month]").forEach((b) => (b.onclick = () => jump(b.dataset.calMonth)));
+  box.querySelectorAll("[data-cal-date]").forEach((b) => {
+    b.onclick = () => {
+      publicCalSelected = b.dataset.calDate;
+      rerender();
+    };
+    b.onkeydown = (e) => e.key === "Enter" && b.tagName !== "BUTTON" && b.click();
+  });
+  const items = publicCalSelected ? calItems(ctx, publicCalSelected) : [];
+  if (!items.length) publicCalSelected = null;
+  // The agenda shows details inside the selected row.
+  renderPublicCalDetail(publicCalView === "agenda" ? null : items, publicCalSelected);
 }
 function renderOrganizerAuth() {
   const logged = Boolean(organizerId);
