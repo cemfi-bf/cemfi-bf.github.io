@@ -30,7 +30,7 @@ window.eval(`
 // app.js dynamically imports the Firebase CDN inside a try/catch; make it fail fast.
 let code = fs.readFileSync(`${DIR}/app.js`, "utf8").replace(/^import .*history-archive.*$/m, "const HISTORY_ARCHIVE = [];").replace(/await Promise\.all\(\[[\s\S]*?\]\);/, "await Promise.reject(new Error('offline'));");
 window.eval(
-  `(async()=>{ ${code} \n window.__cal = (b, r, bl) => { bookings = b; requests = r; blocks = bl; renderPublicCalendar(); }; window.__presenterPicker = presenterPicker; window.__showFaculty = showFacultyCalendar; window.__firstFaculty = PEOPLE.faculty[0].id; window.__setBookings = (b) => { bookings = b; }; })()`,
+  `(async()=>{ ${code} \n window.__cal = (b, r, bl) => { bookings = b; requests = r; blocks = bl; renderPublicCalendar(); }; window.__presenterPicker = presenterPicker; window.__showFaculty = showFacultyCalendar; window.__firstFaculty = PEOPLE.faculty[0].id; window.__setBookings = (b) => { bookings = b; }; window.__unlockFaculty = (id) => { facultyId = id; db = {}; doc = (_db, _c, key) => ({ id: key }); setDoc = async () => {}; deleteDoc = async () => {}; }; })()`,
 );
 await new Promise((r) => setTimeout(r, 300));
 
@@ -124,6 +124,27 @@ assert.strictEqual(box.querySelector('[data-cal-view="year"]').getAttribute("ari
   assert.ok(day("2026-08-03").classList.contains("unavailable") && day("2026-08-03").disabled, "Summer Monday is red and locked in faculty calendar");
   assert.ok(day("2026-12-28").classList.contains("unavailable"), "Christmas Monday is red in faculty calendar");
   assert.ok(!day("2026-10-12").classList.contains("unavailable"), "ordinary Monday stays green");
+}
+
+// --- faculty calendar: equal-size months and the per-month bulk button ---
+{
+  window.__showFaculty(window.__firstFaculty);
+  const doc = window.document;
+  assert.strictEqual(doc.querySelector("[data-month-toggle]"), null, "no bulk button while signed out");
+  const grids = [...doc.querySelectorAll("#faculty-calendar .faculty-calendar-days")];
+  assert.ok(grids.length > 6 && grids.every((g) => g.children.length === 42), "every month renders the same 6x7 grid");
+  window.__unlockFaculty(window.__firstFaculty);
+  window.__showFaculty(window.__firstFaculty);
+  const toggle = doc.querySelector('[data-month-toggle="2026-09"]'),
+    sep = () => [...doc.querySelectorAll('#faculty-calendar [data-availability^="2026-09"]')];
+  assert.ok(toggle && sep().length === 4, "September has a bulk button and four Mondays");
+  assert.strictEqual(toggle.textContent, "Mark all unavailable");
+  toggle.click();
+  assert.ok(sep().every((b) => b.getAttribute("aria-pressed") === "true"), "bulk button marks every Monday unavailable");
+  assert.strictEqual(toggle.textContent, "Mark all available", "bulk button flips its label");
+  toggle.click();
+  assert.ok(sep().every((b) => b.getAttribute("aria-pressed") === "false"), "bulk button marks every Monday available again");
+  window.__unlockFaculty(null);
 }
 
 // --- blocked day: red border + reason shown -------------------------------

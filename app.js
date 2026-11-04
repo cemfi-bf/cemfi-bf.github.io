@@ -589,7 +589,7 @@ function showFacultyCalendar(id) {
         days = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate(),
         offset = (first.getDay() + 6) % 7,
         label = first.toLocaleDateString(undefined, { month: "long", year: "numeric" });
-      return `<section class="faculty-calendar-month" aria-labelledby="month-${month}"><h4 id="month-${month}">${esc(label)}</h4><div class="faculty-calendar-weekdays" aria-hidden="true">${weekdays.map((day) => `<span>${day}</span>`).join("")}</div><div class="faculty-calendar-days">${Array.from({ length: offset }, () => '<span class="calendar-day"></span>').join("")}${Array.from(
+      return `<section class="faculty-calendar-month" aria-labelledby="month-${month}"><div class="faculty-calendar-month-head"><h4 id="month-${month}">${esc(label)}</h4>${unlocked ? `<button type="button" class="link-btn" data-month-toggle="${month}">Mark all unavailable</button>` : ""}</div><div class="faculty-calendar-weekdays" aria-hidden="true">${weekdays.map((day) => `<span>${day}</span>`).join("")}</div><div class="faculty-calendar-days">${Array.from({ length: offset }, () => '<span class="calendar-day"></span>').join("")}${Array.from(
         { length: days },
         (_, index) => {
           const date = `${month}-${String(index + 1).padStart(2, "0")}`,
@@ -638,9 +638,14 @@ function showFacultyCalendar(id) {
             : "Could not sign in. Please try again.";
       }
     };
-  box.querySelectorAll("[data-availability]").forEach((button) => {
-    if (!unlocked) return;
-    button.onclick = async () => {
+  const monthButtons = (month) => [...box.querySelectorAll(`[data-availability^="${month}"]`)],
+    isOff = (button) => button.getAttribute("aria-pressed") === "true",
+    refreshMonthToggles = () =>
+      box.querySelectorAll("[data-month-toggle]").forEach((t) => {
+        const buttons = monthButtons(t.dataset.monthToggle);
+        t.textContent = buttons.every(isOff) ? "Mark all available" : "Mark all unavailable";
+      }),
+    toggle = async (button) => {
       const date = button.dataset.availability,
         unavailable = button.getAttribute("aria-pressed") === "true",
         ref = doc(db, "availability", `seminar_${id}_${date}`);
@@ -651,6 +656,7 @@ function showFacultyCalendar(id) {
         "aria-label",
         `${esc(formatDate(date))}: ${!unavailable ? "unavailable; select to mark available" : "available; select to mark unavailable"}`,
       );
+      refreshMonthToggles();
       const availabilityId = ref.id,
         existingIndex = availability.findIndex((a) => a.id === availabilityId);
       if (unavailable) {
@@ -697,8 +703,20 @@ function showFacultyCalendar(id) {
         );
         button.disabled = false;
       }
-    };
-  });
+    refreshMonthToggles();
+  };
+  if (unlocked) {
+    box.querySelectorAll("[data-availability]").forEach((button) => (button.onclick = () => toggle(button)));
+    box.querySelectorAll("[data-month-toggle]").forEach(
+      (t) =>
+        (t.onclick = () => {
+          const buttons = monthButtons(t.dataset.monthToggle),
+            target = !buttons.every(isOff); // any available Monday: mark all unavailable; otherwise mark all available
+          buttons.filter((b) => isOff(b) !== target).forEach(toggle);
+        }),
+    );
+    refreshMonthToggles();
+  }
 }
 function renderPhdCards() {
   $("phd-cards").innerHTML =

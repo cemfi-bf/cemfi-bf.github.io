@@ -492,23 +492,44 @@ footer a {
 }
 .faculty-calendar-months {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 0.6rem;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.8rem;
 }
 .faculty-calendar-month {
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 0.55rem;
+  border-radius: 12px;
+  background: var(--surface);
+  padding: 0.8rem;
+}
+.faculty-calendar-month-head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  min-height: 2.9rem;
+  margin-bottom: 0.5rem;
 }
 .faculty-calendar-month h4 {
-  margin: 0 0 0.65rem;
-  font-size: 0.95rem;
+  margin: 0;
+  font: 700 1rem var(--serif);
+  letter-spacing: 0;
+}
+.link-btn {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 650;
+}
+.link-btn:hover {
+  text-decoration: underline;
 }
 .faculty-calendar-weekdays,
 .faculty-calendar-days {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 0.25rem;
+  gap: 3px;
 }
 /* Size the grid from its own width (not from which cells happen to have
    content) so a month whose trailing week is entirely blank doesn't render
@@ -523,8 +544,11 @@ footer a {
 .faculty-calendar-weekdays span {
   text-align: center;
   color: var(--muted);
-  font-size: 0.7rem;
+  font-size: 0.62rem;
   font-weight: 650;
+}
+.faculty-calendar-month span.calendar-day {
+  opacity: 0.55;
 }
 .calendar-day {
   aspect-ratio: 1;
@@ -534,10 +558,11 @@ footer a {
      light default background and glare in the dark and red themes. */
   background: transparent;
   border: 1px solid transparent;
-  border-radius: 5px;
+  border-radius: 8px;
   color: var(--muted);
-  font-family: var(--mono);
-  font-size: 0.7rem;
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  position: relative;
   transition:
     background-color var(--duration) var(--ease),
     border-color var(--duration) var(--ease),
@@ -558,9 +583,18 @@ footer a {
   font-weight: 700;
 }
 .calendar-day.today {
-  box-shadow: inset 0 0 0 1.5px var(--accent);
   color: var(--text);
   font-weight: 750;
+}
+.calendar-day.today::after {
+  content: "";
+  position: absolute;
+  bottom: 3px;
+  left: calc(50% - 2px);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
 }
 .date-calendar {
   grid-column: 1/-1;
@@ -587,8 +621,9 @@ footer a {
   background: var(--bg);
   color: var(--text);
 }
-.date-calendar-nav strong,
-.faculty-calendar-month h4,
+.date-calendar-nav strong {
+  font: 700 1.15rem var(--serif);
+}
 .schedule-item .muted {
   font-family: var(--mono);
   letter-spacing: -0.02em;
@@ -613,8 +648,13 @@ footer a {
   line-height: 1.2;
 }
 .date-calendar .calendar-day.selected {
-  outline: 3px solid var(--accent);
-  outline-offset: 1px;
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 0 0 3px var(--accent-lt);
+}
+.date-calendar .calendar-day.selected.today::after {
+  background: #fff;
 }
 .calendar-legend .other {
   background: var(--accent-lt);
@@ -637,14 +677,16 @@ footer a {
 }
 .calendar-day.unavailable {
   border-color: var(--red);
-  background: var(--red-lt);
+  background: repeating-linear-gradient(135deg, var(--red-lt) 0 5px, transparent 5px 10px);
   color: var(--red);
+  text-decoration: line-through;
 }
 .calendar-day.blocked {
   border-color: var(--red);
-  background: var(--red-lt);
+  background: repeating-linear-gradient(135deg, var(--red-lt) 0 5px, transparent 5px 10px);
   color: var(--red);
   font-weight: 700;
+  text-decoration: line-through;
 }
 .calendar-legend .blocked {
   background: var(--red-lt);
@@ -709,7 +751,7 @@ button.calendar-day.monday.locked {
   margin-right: 0.5rem;
 }
 #faculty-calendar {
-  max-width: 760px;
+  max-width: 1000px;
 }
 .faculty-calendar-controls {
   position: relative;
